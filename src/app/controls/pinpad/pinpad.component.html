@@ -1,0 +1,11 @@
+<paper-dialog [attr.opened]="isOpen === true ? true : null"
+              (keydown)="onKeyPress($event)"
+              modal
+>
+  <h1 style="text-align: center; color: red;">{{accessDeniedMessage}}</h1>
+  <div style="width: 250px;">
+  <paper-input type="password" class="input1" [value]="pinNumber" readonly="true" [label]="pinHeaderText"></paper-input>
+  <app-button-panel [items-source]="keypadButtons"></app-button-panel>
+  </div>
+  <div class="bottom_text">{{ bottomText }}</div>
+</paper-dialog>

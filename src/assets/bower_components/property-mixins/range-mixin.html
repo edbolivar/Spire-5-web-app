@@ -1,0 +1,271 @@
+<script>
+  /**
+   * Utilities for number operations
+   */
+  window._numberUtilities = window._numberUtilities || {};
+  /**
+   * emulating handwritten multiplication to keep precision
+   * @param  {[number]} a [factor]
+   * @param  {[number]} b [factor]
+   * @return {[type]}   [product]
+   */
+  window._numberUtilities._safeMult = function(a, b) {
+    a = '' + (a || 0);
+    b = '' + (b || 0);
+
+    const decimal = a.slice(a.indexOf('.')).length + b.slice(b.indexOf('.')).length - 2;
+
+    if (decimal === 0) {
+      return a * b;
+    }
+    const sign = (a[0] === '-' ? b[0] !== '-' : b[0] === '-') ? '-' : '';
+
+    a = +a.replace(/\D/g, '');
+    b = b.replace(/\D/g, '');
+
+    let whole = 0;
+    for (let i = 0; i < b.length; i++) {
+      whole += Math.pow(10, b.length - 1 - i) * a * (+b[i]);
+    }
+    whole = '' + whole;
+    for (let i = whole.length; i < decimal; i++) {
+      whole = '0' + whole;
+    }
+    return +(sign + whole.slice(0, whole.length - decimal) + '.' + whole.slice(whole.length - decimal));
+  }
+  /**
+   * emulating handwritten addition to keep precision
+   * @param  {[number]} a [summand]
+   * @param  {[number]} b [summand]
+   * @return {[type]}   [sum]
+   */
+  window._numberUtilities._safeAdd = function(a, b) {
+    const _a = '' + (a || 0),
+      _b = '' + (b || 0),
+      decimal = Math.max(_a.slice(_a.indexOf('.')).length, _b.slice(_b.indexOf('.')).length) - 1;
+
+    if (decimal === 0) {
+      return a + b;
+    }
+
+    let whole = Math.round(Math.pow(10, decimal) * a + Math.pow(10, decimal) * b);
+
+    const sign = whole < 0 ? '-' : '';
+    whole = '' + Math.abs(whole);
+    for (let i = whole.length; i < decimal; i++) {
+      whole = '0' + whole;
+    }
+    return +(sign + whole.slice(0, whole.length - decimal) + '.' + whole.slice(whole.length - decimal));
+  }
+
+  /**
+   * mixin to provide a range behavior for a given value
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const RangeMixin = (superClass) => { // eslint-disable-line no-unused-vars
+
+    return class extends superClass {
+
+      static get properties() {
+        return {
+          /**
+           * minimal input
+           * @type {number}
+           */
+          min: {
+            type: Number
+          },
+          /**
+           * maximal input
+           * @type {number}
+           */
+          max: {
+            type: Number
+          },
+
+          /**
+           * step for changing the input (referencing to `min` or `0`)
+           * @type {number}
+           */
+          step: {
+            type: Number,
+            value: 1
+          },
+
+          /**
+           * a step modifier. this is useful if you are having one step for multible elements that represent parts of numbers, like when you are having one input for the decimal part and one for the integer part.
+           * For example:
+           *   * if `step` is `0.002` and the `step-mod` is `1000`, `2` will be used
+           *   * if `step` is `10` and the `step-mod` is `0.02`, `0.2` will be used
+           */
+          stepMod: {
+            type: Number,
+            value: 1
+          },
+
+          /**
+           * the used step, product of stepMod and step
+           * @type {number}
+           */
+          _step: {
+            type: Number,
+            value: 1
+          },
+
+          /**
+           * value of the input
+           * @type {number}
+           */
+          valueAsNumber: {
+            type: Number,
+            notify: true,
+            observer: '_valueAsNumberChanged'
+          },
+          /**
+           * default-value of the input
+           * @type {number}
+           */
+          default: {
+            type: Number
+          },
+          /**
+           * if true, the value does not revolve the range according to the maximum or the minimum
+           * @type {boolean}
+           */
+          saturate: {
+            type: Boolean,
+            observer: '_updateValue'
+          },
+          /**
+           * if true, the value does not clamp according to the given step
+           * @type {boolean}
+           */
+          noClamp: {
+            type: Boolean,
+            observer: '_updateValue'
+          }
+        }
+      }
+
+      static get observers() {
+        return [
+          '_minMaxChanged(min, max)',
+          '_stepChanged(step, stepMod)'
+        ]
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        if (this.valueAsNumber === undefined && !isNaN(this.default)) {
+          this.valueAsNumber = this.default;
+        }
+      }
+
+      _minMaxChanged(min, max) {
+        if (+max < +min) {
+          this.setProperties({
+            min: +max,
+            max: +min
+          })
+        } else {
+          this._updateValue();
+        }
+      }
+
+      _valueAsNumberChanged(value, oldValue) {
+        if (value === undefined) return;
+
+        value = this._checkValue(value, oldValue);
+
+        if (value !== this.valueAsNumber) {
+          this.valueAsNumber = value;
+          return;
+        }
+      }
+
+      _checkValue(value, oldValue) {
+        if (isNaN(value)) {
+          if (!isNaN(oldValue)) {
+            return oldValue;
+          } else if (!isNaN(this.default)) {
+            return this.default;
+          } else if (!isNaN(this.min)) {
+            return this.min;
+          } else if (!isNaN(this.max)) {
+            return this.max;
+          }
+          return 0;
+        }
+
+        const saturate = this.saturate,
+          min = this.min,
+          max = this.max;
+
+        if (min !== undefined && value <= min) {
+          if (saturate || value === min || max === undefined || oldValue !== min) {
+            return min;
+          }
+          return max;
+        } else if (max !== undefined && value >= max) {
+          if (saturate || value === max || min === undefined || max !== oldValue) {
+            return max;
+          }
+          return min;
+        } else if (this.noClamp) {
+          return value;
+        }
+        return this._checkStep(value, this._step);
+      }
+
+      _updateValue() {
+        if (this.valueAsNumber !== undefined) {
+          this._valueAsNumberChanged(this.valueAsNumber, this.valueAsNumber);
+        }
+      }
+
+      _checkStep(value, step) {
+        if (!step) {
+          return value;
+        }
+        if (this.default !== undefined) {
+          return this._safeAdd(this._safeMult(Math.round((value - this.default) / step), step), this.default);
+        }
+        if (this.min !== undefined) {
+          return this._safeAdd(this._safeMult(Math.round((value - this.min) / step), step), this.min);
+        }
+        if (this.max !== undefined) {
+          return this._safeAdd(this._safeMult(-Math.round((this.max - value) / step), step), this.max);
+        }
+        return this._safeMult(Math.round(value / step), step);
+      }
+
+      /**
+       * emulating handwritten multiplication to keep precision
+       */
+      _safeMult(a, b) {
+        return window._numberUtilities._safeMult(a, b);
+      }
+
+      /**
+       * emulating handwritten addition to keep precision
+       */
+      _safeAdd(a, b) {
+        return window._numberUtilities._safeAdd(a, b);
+      }
+
+      _stepChanged(step, stepMod) {
+        step = step || 0;
+        if (step !== Math.abs(step)) {
+          this.step = Math.abs(step);
+          return;
+        }
+        this._step = this._safeMult(step, stepMod || 1);
+        this._updateValue();
+      }
+    }
+  }
+
+  window.RangeMixin = RangeMixin;
+</script>

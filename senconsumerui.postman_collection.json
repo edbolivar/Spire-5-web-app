@@ -1,0 +1,420 @@
+{
+	"info": {
+		"_postman_id": "4e7e2f24-4624-413f-9abb-c42e48459d25",
+		"name": "senconsumerui",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "allpourables -en-ca",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/allpourables?country=en-ca",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "en-ca"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -fr-ca",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/allpourables?country=fr-ca",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "fr-ca"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "platform - as unit is configured",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/platform",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"platform"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "pourables",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/pourables",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"pourables"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -la-la",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/allpourables?country=la-la",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "la-la"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -en-us",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/allpourables?country=en-us",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "en-us"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "platform - 1080x1920.json",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/platform?f=platform_1080x1920.json",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"platform"
+					],
+					"query": [
+						{
+							"key": "f",
+							"value": "platform_1080x1920.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "animations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/animations",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"animations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -es-mx",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/allpourables?country=es-mx",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "es-mx"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "flavors ",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/flavors",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"flavors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bubbles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/design/bubbles",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"design",
+						"bubbles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "idle state",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/idlestate",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"idlestate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "out of order toggle",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/test/outoforder",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"test",
+						"outoforder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localization",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://spire.oldprogrammer.io/api/config/localization",
+					"protocol": "http",
+					"host": [
+						"spire",
+						"oldprogrammer",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"localization"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

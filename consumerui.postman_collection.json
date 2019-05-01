@@ -1,0 +1,1209 @@
+{
+	"info": {
+		"_postman_id": "f3b98049-9b7c-4342-b1cb-f3687d77150d",
+		"name": "consumerui",
+		"description": "a",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "version`",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/version",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"version"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "pourables",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c5f214ae-d1a8-49c4-bf3a-f3b51994da29",
+						"type": "text/javascript",
+						"exec": [
+							"var schema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"      \"id\": {",
+							"          \"type\": \"string\"",
+							"      },",
+							"      \"pourItem\": {",
+							"          \"type\": \"object\",",
+							"          \"properties\": {",
+							"              \"id\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"pourConfigurationId\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"label\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"isDisabled\": {",
+							"                  \"type\": \"boolean\"",
+							"              }",
+							"          }",
+							"      },",
+							"      \"recipeId\": {",
+							"          \"type\": \"string\"",
+							"      },",
+							"      \"name\": {",
+							"          \"type\": \"string\"",
+							"      },",
+							"      \"flavors\": {",
+							"          \"type\": \"array\"",
+							"      },",
+							"      \"group\": {",
+							"          \"type\": \"string\"",
+							"      },",
+							"      \"design\": {",
+							"          \"type\": \"object\",",
+							"          \"properties\": {",
+							"              \"assets\": {",
+							"                  \"type\": \"object\",",
+							"                  \"properties\": {",
+							"                      \"logoHome\": {",
+							"                          \"type\": \"string\"",
+							"                      },",
+							"                      \"logoBrand\": {",
+							"                          \"type\": \"string\"",
+							"                      },",
+							"                      \"gradient\": {",
+							"                          \"type\": \"string\"",
+							"                      },",
+							"                      \"liquidIntro\": {",
+							"                          \"type\": \"string\"",
+							"                      },",
+							"                      \"liquidIdle\": {",
+							"                          \"type\": \"string\"",
+							"                      },",
+							"                      \"liquidBackground\": {",
+							"                          \"type\": \"string\"",
+							"                      }",
+							"                  }",
+							"              },",
+							"              \"alphaCarbonation\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"                \"colors\": {",
+							"                  \"type\": \"object\",",
+							"                  \"properties\": {",
+							"                      \"strokeHome\": {",
+							"                          \"type\": \"string\"",
+							"                      },",
+							"                      \"animationLight\": {",
+							"                          \"type\": \"string\"",
+							"                      },",
+							"                      \"animationDark\": {",
+							"                          \"type\": \"string\"",
+							"                      }",
+							"                  }",
+							"              },",
+							"              \"particlesHome\": {",
+							"                  \"type\": \"object\",",
+							"                  \"properties\": {",
+							"                      \"colors\": {",
+							"                          \"type\": \"array\"",
+							"                      },",
+							"                      \"opacity\": {",
+							"                          \"type\": \"object\",",
+							"                          \"properties\": {",
+							"                              \"from\": {",
+							"                                  \"type\": \"number\"",
+							"                              },",
+							"                              \"to\": {",
+							"                                  \"type\": \"number\"",
+							"                              }",
+							"                          }",
+							"                      }",
+							"                  }",
+							"              }",
+							"          }",
+							"      }",
+							"  }, ",
+							"  \"additionalProperties\": true,",
+							"  \"required\": [ \"id\", \"pourItem\" ]",
+							"};",
+							"",
+							"var flavorSchema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"      \"id\": {",
+							"          \"type\": \"string\"",
+							"      }, ",
+							"      \"resourceId\": {",
+							"          \"type\": \"string\"",
+							"      }, ",
+							"      \"name\": {",
+							"          \"type\": \"string\"",
+							"      }, ",
+							"      \"design\": {",
+							"          \"type\": \"object\",",
+							"          \"properties\": {",
+							"              \"textColor\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"textSelectedColor\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"backgroundColor\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"alphaDisabled\": {",
+							"                  \"type\": \"number\"",
+							"              }",
+							"          }",
+							"      },",
+							"      \"select\": {",
+							"          \"type\": \"object\",",
+							"          \"properties\": {",
+							"              \"asset\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"width\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"              \"height\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"              \"frames\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"              \"fps\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"              \"scape\": {",
+							"                  \"type\": \"number\"",
+							"              }",
+							"          }",
+							"      },",
+							"      \"spin\":  {",
+							"          \"type\": \"object\",",
+							"          \"properties\": {",
+							"              \"asset\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"width\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"              \"height\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"              \"frames\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"              \"fps\": {",
+							"                  \"type\": \"number\"",
+							"              },",
+							"              \"scape\": {",
+							"                  \"type\": \"number\"",
+							"              }",
+							"          }",
+							"      },",
+							"      \"pourItem\": {",
+							"          \"type\": \"object\",",
+							"          \"properties\": {",
+							"              \"id\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"pourConfigurationId\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"label\": {",
+							"                  \"type\": \"string\"",
+							"              },",
+							"              \"isDisabled\": {",
+							"                  \"type\": \"boolean\"",
+							"              }",
+							"          }",
+							"      }",
+							"  },",
+							"  \"additionalProperties\": true,",
+							"  \"required\": [\"id\", \"pourItem\"]",
+							"};",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"for (var i = 0; i < jsonData.brands.length; i++) {",
+							"    var testTitle = \"Brand \" + i + \" conforms to schema\";",
+							"    tests[testTitle] = tv4.validate(jsonData.brands[i], schema);",
+							"}",
+							"",
+							"for (var i = 0; i < jsonData.flavors.length; i++) {",
+							"    var testFlavor = \"Flavor \" + i + \" conforms to schema\";",
+							"    tests[testFlavor] = tv4.validate(jsonData.flavors[i], flavorSchema);",
+							"}",
+							"",
+							"tests[\"ResponseTime is less than 500ms\"] = responseTime < 500;",
+							"",
+							"pm.test('Flavors Schema is valid', function() {",
+							"  pm.expect(tv4.validate(jsonData.flavors[0], flavorSchema)).to.be.true;",
+							"});",
+							"",
+							"pm.test('Brands Schema is valid', function() {",
+							"  pm.expect(tv4.validate(pm.response.json().brands[0], schema)).to.be.true;",
+							"});",
+							"",
+							"pm.test('Waters Schema is valid', function() {",
+							"  pm.expect(tv4.validate(pm.response.json().waters[0], schema)).to.be.true;",
+							"});",
+							"",
+							"pm.test('TopCombinations Schema is valid', function() {",
+							"  pm.expect(tv4.validate(pm.response.json().topCombinations[0], schema)).to.be.true;",
+							"});",
+							"",
+							"pm.test('CuratedMixes Schema is valid', function() {",
+							"  pm.expect(tv4.validate(pm.response.json().curatedMixes[0], schema)).to.be.true;",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/pourables",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"pourables"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "platform",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/platform",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"platform"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "animations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/animations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"animations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "validatepin",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/validatepin?pin=2345",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"validatepin"
+					],
+					"query": [
+						{
+							"key": "pin",
+							"value": "2345"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localization",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/localization",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"localization"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bubbles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/bubbles",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"bubbles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "idle state",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/idlestate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"idlestate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "backup",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/automation/backup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"automation",
+						"backup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "restore",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/automation/restore",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"automation",
+						"restore"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "restore?v=2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/automation/restore?v=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"automation",
+						"restore"
+					],
+					"query": [
+						{
+							"key": "v",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "execute (no args)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/automation/execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"automation",
+						"execute"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "execute (list)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/automation/execute?v=list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"automation",
+						"execute"
+					],
+					"query": [
+						{
+							"key": "v",
+							"value": "list"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "execute (stopdispense)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/automation/execute?v=stopdispense",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"automation",
+						"execute"
+					],
+					"query": [
+						{
+							"key": "v",
+							"value": "stopdispense"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "execute (startdispense)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/automation/execute?v=startdispense",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"automation",
+						"execute"
+					],
+					"query": [
+						{
+							"key": "v",
+							"value": "startdispense"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "setidlestate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"videos\": [\r\n    {\r\n      \"name\": \"Default\",\r\n      \"url\": \"./assets/attractor/video.mp4\"\r\n    }\r\n  ],\r\n  \"loop\": false,\r\n  \"delayHome\": 10,\r\n  \"delayBrand\": 15,\r\n  \"colorLight\": \"#ffe2e4b4\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/setidlestate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"setidlestate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set all curated mixes that can pour",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"Id\": \"mix-beach-ready\",\r\n    \"RecipeId\": \"80615346-83c4-4c35-a69f-f91736fac417\"\r\n  },\r\n  {\r\n    \"Id\": \"mix-american-summer\",\r\n    \"RecipeId\": \"4309756b-a3e9-4cd7-a9f3-461c920d93f1\"\r\n  }\r\n]"
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/setallcuratedmixesthatpour",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"setallcuratedmixesthatpour"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dispenseablerecipes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/dispensablerecipes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"dispensablerecipes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "curated mixes that pour",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/curatedmixesthatpour",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"curatedmixesthatpour"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -en-ca",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/allpourables?country=en-ca",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "en-ca"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -fr-ca",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/allpourables?country=fr-ca",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "fr-ca"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -la-la",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/allpourables?country=la-la",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "la-la"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -en-us",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/allpourables?country=en-us",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "en-us"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "platform - 1080x1920.json",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/platform?f=platform_1080x1920.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"platform"
+					],
+					"query": [
+						{
+							"key": "f",
+							"value": "platform_1080x1920.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "allpourables -es-mx",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/allpourables?country=es-mx",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"allpourables"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "es-mx"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "flavors ",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/flavors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"flavors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "out of order test toggle",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/test/outoforder",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"test",
+						"outoforder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "valveassignments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/valveassignments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"valveassignments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "all bibitems",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/bibitems",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"bibitems"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "all recipes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/allrecipes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"allrecipes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "curated mixes that pour",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/curatedmixesthatpour",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"curatedmixesthatpour"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "home",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/design/home",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"design",
+						"home"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "overrides",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/overrides",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"overrides"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "unit state",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/config/unitstate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"config",
+						"unitstate"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f35dba04-fc69-458d-9475-89b20ea65dfd",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ebf12c8c-840f-4289-9cad-f3927cdfbbec",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

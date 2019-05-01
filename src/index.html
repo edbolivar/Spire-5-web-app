@@ -1,0 +1,381 @@
+<!doctype html>
+<html>
+<head>
+  <title>ConsumerUI</title>
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <base href="./">
+
+  <script>
+    window.Polymer = window.Polymer || {};
+    window.Polymer.dom = 'shadow';
+  </script>
+
+  <link rel="stylesheet" type="text/css" href="assets/styles/fonts.css">
+
+  <!--webcomponents-lite.js is called from .angular-cli.json-->
+  <link rel="import" href="assets/bower_components/polymer/polymer.html">
+  <link rel="import" href="assets/bower_components/iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="assets/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+  <custom-style>
+    <style include="iron-flex iron-flex-alignment"></style>
+  </custom-style>
+
+
+
+
+
+
+  <link rel="import" href="assets/bower_components/iron-icon/iron-icon.html">
+  <link rel="import" href="assets/bower_components/iron-icons/notification-icons.html">
+  <link rel="import" href="assets/bower_components/iron-image/iron-image.html">
+  <link rel="import" href="assets/bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="assets/bower_components/iron-iconset-svg/iron-iconset-svg.html">
+  <link rel="import" href="assets/bower_components/iron-icons/av-icons.html">
+  <link rel="import" href="assets/bower_components/iron-icons/image-icons.html">
+  <link rel="import" href="assets/bower_components/iron-icons/hardware-icons.html">
+  <link rel="import" href="assets/bower_components/paper-fab/paper-fab.html">
+  <link rel="import" href="assets/bower_components/paper-input/paper-input.html">
+  <link rel="import" href="assets/bower_components/paper-input/paper-input.html">
+  <link rel="import" href="assets/bower_components/paper-card/paper-card.html">
+  <link rel="import" href="assets/bower_components/paper-button/paper-button.html">
+  <link rel="import" href="assets/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+  <link rel="import" href="assets/bower_components/paper-listbox/paper-listbox.html">
+  <link rel="import" href="assets/bower_components/paper-item/paper-item.html">
+  <link rel="import" href="assets/bower_components/paper-tooltip/paper-tooltip.html">
+  <link rel="import" href="assets/bower_components/paper-material/paper-material.html">
+  <link rel="import" href="assets/bower_components/paper-input/paper-textarea.html">
+  <link rel="import" href="assets/bower_components/paper-slider/paper-slider.html">
+  <link rel="import" href="assets/bower_components/paper-progress/paper-progress.html">
+  <link rel="import" href="assets/bower_components/paper-header-panel/paper-header-panel.html">
+  <link rel="import" href="assets/bower_components/paper-checkbox/paper-checkbox.html">
+  <link rel="import" href="assets/bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="assets/bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+  <!--<link rel="import" href="assets/bower_components/paper-toolbar/paper-toolbar.html">-->
+  <link rel="import" href="assets/bower_components/app-layout/app-layout.html">
+  <link rel="import" href="assets/bower_components/paper-dialog/paper-dialog.html">
+  <!--<link rel="import" href="assets/bower_components/paper-drawer-panel/paper-drawer-panel.html">-->
+  <link rel="import" href="assets/bower_components/paper-tabs/paper-tabs.html">
+  <link rel="import" href="assets/bower_components/paper-radio-button/paper-radio-button.html">
+  <link rel="import" href="assets/bower_components/paper-radio-group/paper-radio-group.html">
+  <link rel="import" href="assets/bower_components/paper-toast/paper-toast.html">
+  <link rel="import" href="assets/bower_components/iron-icons/social-icons.html">
+  <link rel="import" href="assets/bower_components/iron-pages/iron-pages.html">
+  <link rel="import" href="assets/bower_components/paper-menu-button/paper-menu-button.html">
+  <link rel="import" href="assets/bower_components/paper-toggle-button/paper-toggle-button.html">
+  <link rel="import" href="assets/bower_components/neon-animation/neon-animation.html">
+  <!--<link rel="import" href="assets/bower_components/web-animations-js/web-animations.html">-->
+
+  <link rel="import" href="assets/bower_components/datetime-picker/date-picker.html">
+  <link rel="import" href="assets/bower_components/datetime-picker/overlay-date-picker.html">
+  <link rel="import" href="assets/bower_components/input-picker-pattern/overlay-element.html">
+
+  <link rel="import" href="assets/styles/app-theme.html">
+
+
+  <link href="assets/styles/site.css" rel="stylesheet">
+
+  <link href='http://fonts.googleapis.com/css?family=Petit+Formal+Script' rel='stylesheet' type='text/css'>
+
+  <!-- Styles -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #999999;
+      overflow: scroll;
+    }
+  </style>
+
+
+
+
+
+  <style>
+    .loader {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 72.42640687119285px;
+      height: 72.42640687119285px;
+      margin-left: -36.21320343559643px;
+      margin-top: -36.21320343559643px;
+      border-radius: 100%;
+      -webkit-animation-name: loader;
+      animation-name: loader;
+      -webkit-animation-iteration-count: infinite;
+      animation-iteration-count: infinite;
+      -webkit-animation-timing-function: linear;
+      animation-timing-function: linear;
+      -webkit-animation-duration: 4s;
+      animation-duration: 4s;
+    }
+    .loader .side {
+      display: block;
+      width: 6px;
+      height: 30px;
+      background-color: #046380;
+      margin: 2px;
+      position: absolute;
+      border-radius: 50%;
+      -webkit-animation-duration: 1.5s;
+      animation-duration: 1.5s;
+      -webkit-animation-iteration-count: infinite;
+      animation-iteration-count: infinite;
+      -webkit-animation-timing-function: ease;
+      animation-timing-function: ease;
+    }
+    .loader .side:nth-child(1),
+    .loader .side:nth-child(5) {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+      -webkit-animation-name: rotate0;
+      animation-name: rotate0;
+    }
+    .loader .side:nth-child(3),
+    .loader .side:nth-child(7) {
+      -webkit-transform: rotate(90deg);
+      transform: rotate(90deg);
+      -webkit-animation-name: rotate90;
+      animation-name: rotate90;
+    }
+    .loader .side:nth-child(2),
+    .loader .side:nth-child(6) {
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      -webkit-animation-name: rotate45;
+      animation-name: rotate45;
+    }
+    .loader .side:nth-child(4),
+    .loader .side:nth-child(8) {
+      -webkit-transform: rotate(135deg);
+      transform: rotate(135deg);
+      -webkit-animation-name: rotate135;
+      animation-name: rotate135;
+    }
+    .loader .side:nth-child(1) {
+      top: 36.21320343559643px;
+      left: 72.42640687119285px;
+      margin-left: -3px;
+      margin-top: -15px;
+      -webkit-animation-delay: 0;
+      animation-delay: 0;
+    }
+    .loader .side:nth-child(2) {
+      top: 61.819805146639155px;
+      left: 61.819805146639155px;
+      margin-left: -3px;
+      margin-top: -15px;
+      -webkit-animation-delay: 0;
+      animation-delay: 0;
+    }
+    .loader .side:nth-child(3) {
+      top: 72.42640687119285px;
+      left: 36.21320343559643px;
+      margin-left: -3px;
+      margin-top: -15px;
+      -webkit-animation-delay: 0;
+      animation-delay: 0;
+    }
+    .loader .side:nth-child(4) {
+      top: 61.819805146639155px;
+      left: 10.606601724553695px;
+      margin-left: -3px;
+      margin-top: -15px;
+      -webkit-animation-delay: 0;
+      animation-delay: 0;
+    }
+    .loader .side:nth-child(5) {
+      top: 36.21320343559643px;
+      left: 0px;
+      margin-left: -3px;
+      margin-top: -15px;
+      -webkit-animation-delay: 0;
+      animation-delay: 0;
+    }
+    .loader .side:nth-child(6) {
+      top: 10.606601724553695px;
+      left: 10.606601724553695px;
+      margin-left: -3px;
+      margin-top: -15px;
+      -webkit-animation-delay: 0;
+      animation-delay: 0;
+    }
+    .loader .side:nth-child(7) {
+      top: 0px;
+      left: 36.21320343559643px;
+      margin-left: -3px;
+      margin-top: -15px;
+      -webkit-animation-delay: 0;
+      animation-delay: 0;
+    }
+    .loader .side:nth-child(8) {
+      top: 10.606601724553695px;
+      left: 61.819805146639155px;
+      margin-left: -3px;
+      margin-top: -15px;
+      -webkit-animation-delay: 0;
+      animation-delay: 0;
+    }
+    @-webkit-keyframes rotate0 {
+      0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      60% {
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
+      100% {
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
+    }
+    @keyframes rotate0 {
+      0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      60% {
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
+      100% {
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
+    }
+    @-webkit-keyframes rotate90 {
+      0% {
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+      }
+      60% {
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
+      }
+      100% {
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
+      }
+    }
+    @keyframes rotate90 {
+      0% {
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+      }
+      60% {
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
+      }
+      100% {
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
+      }
+    }
+    @-webkit-keyframes rotate45 {
+      0% {
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+      }
+      60% {
+        -webkit-transform: rotate(225deg);
+        transform: rotate(225deg);
+      }
+      100% {
+        -webkit-transform: rotate(225deg);
+        transform: rotate(225deg);
+      }
+    }
+    @keyframes rotate45 {
+      0% {
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+      }
+      60% {
+        -webkit-transform: rotate(225deg);
+        transform: rotate(225deg);
+      }
+      100% {
+        -webkit-transform: rotate(225deg);
+        transform: rotate(225deg);
+      }
+    }
+    @-webkit-keyframes rotate135 {
+      0% {
+        -webkit-transform: rotate(135deg);
+        transform: rotate(135deg);
+      }
+      60% {
+        -webkit-transform: rotate(315deg);
+        transform: rotate(315deg);
+      }
+      100% {
+        -webkit-transform: rotate(315deg);
+        transform: rotate(315deg);
+      }
+    }
+    @keyframes rotate135 {
+      0% {
+        -webkit-transform: rotate(135deg);
+        transform: rotate(135deg);
+      }
+      60% {
+        -webkit-transform: rotate(315deg);
+        transform: rotate(315deg);
+      }
+      100% {
+        -webkit-transform: rotate(315deg);
+        transform: rotate(315deg);
+      }
+    }
+    @-webkit-keyframes loader {
+      0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
+    @keyframes loader {
+      0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+
+
+
+
+</head>
+<body>
+<app-root>
+  <!-- application loader display -->
+  <div class="loader">
+    <div class="side"></div>
+    <div class="side"></div>
+    <div class="side"></div>
+    <div class="side"></div>
+    <div class="side"></div>
+    <div class="side"></div>
+    <div class="side"></div>
+    <div class="side"></div>
+  </div>
+</app-root>
+<consumer-ui-container>
+
+</consumer-ui-container>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+	// Any entry in this file can either be an object, or a JSON name that points to a file containing an object
+	// Any JS-like comments are ignored
+
+	// Basic frontend
+//"platform": "platform_1080x1920_tower.json",
+
+	// Content
+	//"strings": "strings.json",
+
+	// UI
+	//"attractor": "attractor.json",
+
+	// // Inventory
+	// "inventory": "inventory.json",
+
+	// // Backend
+	// "backend": "backend_signalr-pubsub.json",
+	// "beverages": "beverages.json",
+	// "flavors": "flavors.json"
+
+	// Missing: debug.*, gestures.*
+	// Also missing: paths.xmls.ada, .animations, .beverages, .flavors, .home, .lightning, .masthead, .platforms, .recipes
+}

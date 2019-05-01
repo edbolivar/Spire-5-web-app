@@ -1,0 +1,29 @@
+@font-face {
+  font-family: 'Booster Next FY Black';
+  src: url(../fonts/BoosterNextFY-Black.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Booster Next FY Bold';
+  src: url(../fonts/BoosterNextFY-Bold.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Booster Next FY Light';
+  src: url(../fonts/BoosterNextFY-Light.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Booster Next FY Medium';
+  src: url(../fonts/BoosterNextFY-Medium.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Booster Next FY Regular';
+  src: url(../fonts/BoosterNextFY-Regular.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Booster Next FY Thin';
+  src: url(../fonts/BoosterNextFY-Thin.woff) format('woff');
+}

@@ -1,0 +1,376 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../property-mixins/range-mixin.html">
+<link rel="import" href="../property-mixins/intl-number-format-mixin.html">
+<link rel="import" href="../input-picker-pattern/input-pattern.html">
+
+<script>
+  /**
+   * mixin to create a number-input
+   *
+   * @appliesMixin IntlNumberFormatMixin
+   * @appliesMixin RangeMixin
+   * @appliesMixin InputPattern
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const NumberInputMixin = superClass => { // eslint-disable-line no-unused-vars
+
+    return class extends RangeMixin(InputPattern(IntlNumberFormatMixin(superClass))) {  // eslint-disable-line no-undef
+
+      static get styleTemplate() {
+        return `
+          ${super.styleTemplate || ''}
+          #minsize,
+          #size,
+          #input {
+            @apply --number-input;
+            margin: 0;
+            -moz-appearance: textfield;
+            appearance: textfield;
+          }
+          :host(:focus) #input,
+          :host(:hover) #input,
+          #input:hover,
+          #input:focus {
+            @apply --number-input-focus;
+          }
+          :host([invalid]) #input {
+            @apply --number-input-invalid;
+          }
+          :host([disabled]) #input {
+            @apply --number-input-disabled;
+          }
+          #input::-webkit-inner-spin-button,
+          #input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+          }
+          #input::-webkit-input-placeholder,
+          #input::placeholder {
+            @apply --number-input-placeholder;
+          }
+        `;
+      }
+
+      static get inputTemplate() {
+        return `
+          <input id="input"
+            type="[[type]]"
+            value="{{input::input}}"
+            step="[[step]]"
+            required$="[[required]]"
+            disabled$="[[disabled]]"
+            placeholder="[[placeholder]]"
+            spellcheck="false"
+            autocomplete="off">
+        `;
+      }
+
+      static get properties() {
+        return {
+
+          /**
+           * type of the input
+           */
+          type: {
+            type: String,
+            computed: '_computeType(formatNumber, alwaysSign)'
+          },
+
+          /**
+           * length to pad the string (with `0`) according to the total amount of numbers
+           */
+          padLength: {
+            type: Number
+          },
+
+          /**
+           * always put the sign at the beginning
+           */
+          alwaysSign: {
+            type: Boolean,
+            observer: '_updateValue'
+          },
+
+          /**
+           * enables auto padding
+           * @type {boolean}
+           */
+          autoPadding: {
+            type: Boolean
+          },
+
+          /**
+           * start where to increment the value
+           */
+          startAt: {
+            type: Number
+          },
+
+          /**
+           * minimum digits right to the decimal separator
+           */
+          minimumFractionDigits: {
+            type: Number,
+            computed: '_computeMinimumFractionDigits(_step, min, max, numberStyle)',
+            notify: true
+          },
+
+          /**
+           * maximum digits right to the decimal separator
+           */
+          maximumFractionDigits: {
+            type: Number,
+            computed: '_computeMaximumFractionDigits(minimumFractionDigits, noClamp)',
+            notify: true
+          },
+
+          /**
+           * minimum digits left to the decimal separator to pad
+           */
+          minimumIntegerDigits: {
+            type: Number,
+            computed: '_computeMinimumIntegerDigits(autoPadding, padLength, default, startAt, min, max, _step, numberStyle)',
+            notify: true
+          },
+
+          /**
+           * defines the property that should be used for the value
+           */
+          propertyForValue: {
+            type: String,
+            value: 'valueAsNumber'
+          }
+        }
+      }
+
+      static get observers() {
+        return [
+          '_computeMinWidth(formatNumber, startAt, min, max, minimumIntegerDigits, minimumFractionDigits, alwaysSign)',
+          '_updateValue(formatNumber)'
+        ]
+      }
+
+      _checkKeycode(e) {
+        // up or down key press
+        const step = (e.keyCode === 38) ? this._step : (e.keyCode === 40 ? -this._step : 0);
+        if (step !== 0) {
+          this._checkInput();
+          setTimeout(this._increm.bind(this, this.valueAsNumber, +step), 0);
+          e.stopPropagation();
+          return;
+        }
+
+        super._checkKeycode && super._checkKeycode(e);
+      }
+
+      _increm(value, step) {
+        value = +this._safeAdd(value, step);
+        if (isNaN(value)) {
+          if (!isNaN(this.startAt)) {
+            this.valueAsNumber = +this.startAt;
+          } else if (!isNaN(this.default)) {
+            this.valueAsNumber = +this.default;
+          } else {
+            this.valueAsNumber = this.min < 0 ? 0 : this.min || 0;
+          }
+        } else {
+          this.valueAsNumber = value;
+        }
+      }
+
+      _computeInvalid(required, value) {
+        this.invalid = required && isNaN(value);
+      }
+
+      _inputChanged(input) {
+        if (!input) {
+          if (!isNaN(this.default)) {
+            this.setProperties({
+              input: this.formatNumber(this.default),
+              valueAsNumber: +this.default
+            })
+          }
+          this._debouncedComputeWidth();
+          return;
+        }
+        const value = this._checkValue(this.parseNumber(input), this.valueAsNumber);
+        input = this.formatNumber(value);
+
+        this.setProperties({
+          input: input,
+          valueAsNumber: value
+        });
+        if (this.autoResize) {
+          this._debouncedComputeWidth();
+        }
+      }
+
+      _valueAsNumberChanged(value, oldValue) {
+        if (value === undefined) {
+          if (!isNaN(this.default)) {
+            this.valueAsNumber = this.default;
+          } else {
+            this.input = this.input = '';
+          }
+          return;
+        }
+
+        if (isNaN(oldValue)) {
+          value = this._checkValue(value);
+        } else {
+          value = this._checkValue(value, oldValue);
+        }
+
+        if (this.valueAsNumber !== value) {
+          this.valueAsNumber = value;
+          return;
+        }
+        this.input = this.input = this.formatNumber(value);
+      }
+
+      _defaultChanged(def) {
+        if (isNaN(this.valueAsNumber) && !isNaN(def)) {
+          this.valueAsNumber = def;
+        }
+      }
+
+      _computeType() {
+        // maximize compatibility for mobile keyboards
+        if (this.decimalSeparator === '.') {
+          if (this.numberStyle === 'decimal' && !this.unit && !this.alwaysSign  && !this.padLength && !this.autoPadding) {
+            return 'number';
+          }
+          return 'tel';
+        }
+        return 'text';
+      }
+
+      _computeMinWidth() {
+        if (this._minWidthComputionJob) {
+          clearTimeout(this._minWidthComputionJob);
+          this._minWidthComputionJob = null;
+        }
+
+        this._minWidthComputionJob = setTimeout(() => {
+          const def = this.formatNumber(this.default || 0),
+            placeholder = this.placeholder || '',
+            startAt = this.formatNumber(this.startAt || 0),
+            min = this.formatNumber(this.min || 0),
+            max = this.formatNumber(this.max || 0),
+            minlength = this.formatNumber(Math.pow(10, Math.ceil(this.minlength || 1) - (this.numberStyle === 'percent' ? 3 : 1)));
+          const gen = (!this.alwaysSign && (this.min < 0 || this.max < 0) ? '-' : '') + this.formatNumber(Math.pow(10, (this.minimumIntegerDigits || 1) - 1) + Math.pow(10, -(this.minimumFractionDigits || 0)));
+          this._minWidthString = (this.noAutoWidth ? [minlength] : [max, min, def, startAt, gen, minlength]).reduce( (acc, curr) => {
+            return curr.length > acc.length ? curr : acc;
+          }, placeholder);
+        }, 0);
+      }
+
+      _computeMinimumIntegerDigits(autoPadding, padLength, def, startAt, min, max, step, numberStyle) {
+        if (numberStyle === 'percent') {
+          min = Math.round(min * 100);
+          max = Math.round(max * 100);
+          def = Math.round(def * 100);
+          step = Math.round(step * 100);
+          startAt = Math.round(startAt * 100);
+        } else {
+          min = Math.round(min);
+          max = Math.round(max);
+          def = Math.round(def);
+          step = Math.round(step);
+          startAt = Math.round(startAt);
+        }
+        min = '' + (Math.abs(min) || 0);
+        max = '' + (Math.abs(max) || 0);
+        def = '' + (Math.abs(def) || 0);
+        step = '' + (Math.abs(step) || 0);
+        startAt = '' + (Math.abs(startAt) || 0);
+
+        if (autoPadding) {
+          return Math.max((padLength || 1), startAt.length, step.length, def.length, min.length, max.length);
+        }
+        return padLength || 1;
+      }
+
+      _computeMinimumFractionDigits(step, min, max, numberStyle) {
+        if (numberStyle === 'percent') {
+          min = this._safeMult(min || 0, 100);
+          max = this._safeMult(max || 0, 100);
+          step = this._safeMult(step || 0.01, 100);
+        }
+
+        min = '' + (Math.abs(min) || '');
+        max = '' + (Math.abs(max) || '');
+        step = '' + step;
+
+        return ['0', step, min, max].reduce( (acc, curr) => {
+          const pos = curr.indexOf('.');
+          return Math.max((pos < 0) ? 0 : (curr.length - 1 - pos), acc);
+        });
+      }
+
+      _computeMaximumFractionDigits(minimumFractionDigits, noClamp) {
+        if (noClamp) {
+          return 20;
+        }
+        return minimumFractionDigits;
+      }
+
+    }
+  }
+  window.NumberInputMixin = NumberInputMixin;
+</script>
+
+<dom-module id="number-input">
+  <script>
+    /**
+     *  `number-input` is an element that can:
+     * * prevent non numeric input
+     * * guarantee **live**-data to be valid
+     * * pad a value with `0` (to a specific length)
+     * * size the input (according to it's length)
+     * * overflow to minimum or underflow to maximum
+     * * saturate to minimum or to maximum
+     * * display a specified unit and size the input
+     * * specify the decimal separator (the value will still be a Number object)
+     * * use percent-format
+     *
+     * Example:
+     * ```html
+     * <number-input step="2" min="-20" max="140" pad-length="2"></number-input>
+     * ```
+     *
+     * It sizes automatically. Use `key-up` and `key-down` to increment the value. If `step` is given, the value is a **multiple** of `step`.
+     *
+     *  Have a look at [input-picker-pattern#input-shared-style](https://github.com/fooloomanzoo/input-picker-pattern#input-shared-style) to see how to style the element.
+     *
+     * ```css
+     *  number-input {
+     *   --input-disabled-color: grey;
+     *   --input-focus-background: rgba(0,0,0,0.3);
+     *   --input-focus: {
+     *     font-weight: bold;
+     *   };
+     *   --input-placeholder: {
+     *     color: pink;
+     *   };
+     * }
+     * ```
+     * @polymer
+     * @customElement
+     *
+     * @appliesMixin NumberInputMixin
+     *
+     * @demo demo/index.html
+     * @demo demo/form.html Form Demo
+     **/
+    class NumberInput extends NumberInputMixin(Polymer.Element) {  // eslint-disable-line no-undef
+
+      static get is() {
+        return 'number-input';
+      }
+    }
+    window.customElements.define(NumberInput.is, NumberInput);
+  </script>
+</dom-module>

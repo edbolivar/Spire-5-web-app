@@ -1,0 +1,51 @@
+{
+  "name": "@fooloomanzoo/datetime-picker",
+  "version": "2.9.1",
+  "authors": [
+    "Johannes Brautzsch <fooloomanzoo>"
+  ],
+  "description": "A picker for date and time, that prefers to use the native input. It includes a calendar and a timer.",
+  "homepage": "https://github.com/fooloomanzoo/datetime-picker/",
+  "keywords": [
+    "webcomponents",
+    "polymer",
+    "picker",
+    "datetime",
+    "date",
+    "calendar",
+    "time",
+    "timer",
+    "range",
+    "input",
+    "polyfill"
+  ],
+  "main": "index.html",
+  "scripts": {
+    "postinstall": "bower install",
+    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && npm version patch && git push",
+    "gh-pages": "git checkout gh-pages && bower update -f && git add . && git commit -m \"update\" && git push && git checkout master",
+    "build": "bower update && polymer analyze > analysis.json",
+    "prestart": "polymer analyze > analysis.json",
+    "start": "polymer serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fooloomanzoo/datetime-picker.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@fooloomanzoo/datetime-input": "^2.2.4",
+    "@fooloomanzoo/input-picker-pattern": "^2.1.8",
+    "@fooloomanzoo/number-input": "^2.2.2",
+    "@fooloomanzoo/property-mixins": "^2.3.8",
+    "@polymer/polymer": "^2"
+  },
+  "devDependencies": {
+    "@webcomponents/webcomponentsjs": "*",
+    "@polymer/iron-component-page": "*",
+    "@polymer/iron-flex-layout": "*",
+    "@polymer/iron-demo-helpers": "*",
+    "@polymer/iron-form": "*"
+  }
+}

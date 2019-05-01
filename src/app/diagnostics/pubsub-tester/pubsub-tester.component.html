@@ -1,0 +1,10 @@
+<paper-button raised  (click)="onClick()">Send Event</paper-button>
+<paper-button raised  (click)="unsubscribeByToken()">unsubscribe by token</paper-button>
+<paper-button raised  (click)="subscribe()">subscribe</paper-button>
+<paper-button raised  (click)="subscribe2()">subscribe2</paper-button>
+<paper-button raised  (click)="clearLog()">clear log</paper-button>
+
+
+<div *ngFor="let myEvent of log, let i=index">
+  <b>{{myEvent}}</b>
+</div>
