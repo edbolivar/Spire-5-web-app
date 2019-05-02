@@ -68,7 +68,6 @@ export default class AuthenticatingPage extends AbstractScreen {
         video.pause();
         video.onLoaded.add(() => {
           if (this.areAllVideosLoaded()) {
-            this.resizeAllVideos();
             resolve();
           }
         });
@@ -133,31 +132,6 @@ export default class AuthenticatingPage extends AbstractScreen {
     return this._videos.every(video => video.isLoaded);
   }
 
-  private resizeAllVideos() {
-    // Resize all videos to fit within the viewport rectangle
-    const viewport = new Rectangle(
-      0,
-      0,
-      this.Platform.width,
-      this.Platform.height
-    );
-
-    for (const video of this._videos) {
-      const videoSize = {
-        width: video.intrinsicWidth,
-        height: video.intrinsicHeight
-      };
-      const videoRect = LayoutUtils.fitInsideRectangle(
-        videoSize,
-        viewport,
-        true
-      );
-      video.x = videoRect.x;
-      video.y = videoRect.y;
-      video.width = videoRect.width;
-      video.height = videoRect.height;
-    }
-  }
 
   private playVideo(videoIndex: number) {
     this._currentVideo = videoIndex;

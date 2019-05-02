@@ -5,6 +5,8 @@ import { AppInfoService } from '../../services/app-info.service';
 import { IdleState } from '../../universal/app.types';
 import { JsUtil } from '../../universal/JsUtil';
 import {SubscribeEvent, PubSubTopic, PublishEvent} from '../../universal/pub-sub-types';
+import Easing from '../../../transitions/Easing';
+import { IdleToHomeTransition } from '../../display/navigation/IdleToHomeTransition';
 
 export default class ScanPage extends AbstractScreen {  
 
@@ -22,6 +24,11 @@ export default class ScanPage extends AbstractScreen {
     this.objectId = JsUtil.getObjectId();
     this._videos = [];
     this.visible = false;
+
+    SubscribeEvent.Create(PubSubTopic.idleStateChanged, this.objectId)
+      .HandleEventWithThisMethod(e => this.onIdleStateChanged(e.data))
+      .Done();
+      ScanPage._instance = this;
   }
 
   onIdleStateChanged(e: IdleState) {
@@ -36,19 +43,19 @@ export default class ScanPage extends AbstractScreen {
 
     return new Promise(resolve => {
       // Add cover
-      // this._cover = new Box();
-      // this._cover.alpha = 0;
-      // this._cover.width = this.Platform.width;
-      // this._cover.height = this.Platform.height;
-      // this._cover.interactive = true;
-      // this._cover.buttonMode = true;
-      // this._cover.on('click', () => {
-      //   this.dismiss();
-      // });
-      // this.addChild(this._cover);
+      this._cover = new Box();
+      this._cover.alpha = 0;
+      this._cover.width = this.Platform.width;
+      this._cover.height = this.Platform.height;
+      this._cover.interactive = true;
+      this._cover.buttonMode = true;
+      this._cover.on('click', () => {
+        this.dismiss();
+      });
+      this.addChild(this._cover);
 
-      // this.alpha = 0;
-      // this.visible = true;
+      this.alpha = 0;
+      this.visible = true;
 
     });
   }
@@ -57,6 +64,9 @@ export default class ScanPage extends AbstractScreen {
   }
 
   public async transition(transitionInfluence: number) {
+    if (!this.navigator.transition) {
+      return ;
+    }
 
   }
 
