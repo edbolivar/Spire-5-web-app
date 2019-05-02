@@ -22,7 +22,6 @@ export default class ScanPage extends AbstractScreen {
     this.objectId = JsUtil.getObjectId();
     this._videos = [];
     this.visible = false;
-
   }
 
   onIdleStateChanged(e: IdleState) {
