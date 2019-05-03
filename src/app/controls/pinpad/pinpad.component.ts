@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild, OnDestroy, ChangeDetectorRef,HostListener} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import {AppInfoService} from '../../services/app-info.service';
 import {JsUtil} from '../../universal/JsUtil';
 import {PublishEvent, PubSubEventArgs, PubSubTopic, SubscribeEvent} from '../../universal/pub-sub-types';
@@ -6,7 +6,6 @@ import {ButtonModel, Gestures, ButtonEventData, ApiResult} from '../../universal
 import { HttpClient } from '@angular/common/http';
 import { ConfigurationService } from '../../services/configuration.service';
 import { LocalizationService } from '../../services/localization.service';
-import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-pinpad',
@@ -15,7 +14,6 @@ import { environment } from '../../../environments/environment.prod';
 })
 export class PinpadComponent implements OnInit, OnDestroy {
 
-  static _instance: PinpadComponent = null;
   objectId: number ;
   isOpen = false ;
   countKeypresses = 0 ;
@@ -23,17 +21,14 @@ export class PinpadComponent implements OnInit, OnDestroy {
   keypadButtons: ButtonModel[] = [];
   pinHeaderText = 'ENTER PIN';
   bottomText = '';
-  accessDeniedMessage = '';
 
   constructor(public appInfo: AppInfoService,
               private configurationService: ConfigurationService,
-              private changeDetector: ChangeDetectorRef,
-              private localizationService: LocalizationService
+              private changeDetector: ChangeDetectorRef
   ) {
-    this.objectId = JsUtil.getObjectId(); 
+    this.objectId = JsUtil.getObjectId();
     console.log('ctor.PinPad ', this.objectId);
     this.prepareButtons();
-    PinpadComponent._instance = this;
   }
 
   prepareButtons() {
@@ -64,7 +59,8 @@ export class PinpadComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const self = this;
+    const self = this ;
+    console.log('pinpad.ngoninit');
 
     SubscribeEvent.Create(PubSubTopic.showPinpad, this.objectId)
       .HandleEventWithThisMethod(e => self.showPinpad())
@@ -81,7 +77,6 @@ export class PinpadComponent implements OnInit, OnDestroy {
       SubscribeEvent.Create(PubSubTopic.localizationChanged, this.objectId)
         .HandleEventWithThisMethod(e => self.handleLocalizationChanged())
         .Done();
-
   }
 
   handleLocalizationChanged() {
@@ -90,16 +85,15 @@ export class PinpadComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     SubscribeEvent.UnSubscribeByConsumer(this.objectId);
-    PinpadComponent._instance = null;
   }
 
   showPinpad() {
+    console.log('show pinpad');
     this.pinNumber = '';
     this.isOpen = true ;
     this.countKeypresses = 0 ;
     this.changeDetector.detectChanges();
   }
-
 
   handleKeypad(data: ButtonEventData) {
     if (data.buttonModel.Id === 'del' && this.pinNumber.length > 0) {
@@ -110,35 +104,24 @@ export class PinpadComponent implements OnInit, OnDestroy {
       this.pinNumber += data.buttonModel.Id;
 
       if (this.pinNumber.length === 4) {
-        // 9735 is hack for demo site
+        this.isOpen = false ;
+
         if (this.pinNumber === '9735') {
           this.showConsumerUI();
-          this.appInfo.isPinPassed = true;
         } else {
           this.configurationService.validatePinNumber(this.pinNumber);
-          this.pinNumber = '';
         }
       }
     }
 
-    if (this.pinNumber.length > 0) {
-      this.accessDeniedMessage = '';
-      document.getElementsByClassName('bottom_text')[0].setAttribute('style', 'font-size: 12px');
-    }
-
-    else if(this.pinNumber.length == 0) {
-      document.getElementsByClassName('bottom_text')[0].setAttribute('style', 'font-size: 24px');
-    }
     this.changeDetector.detectChanges();
   }
 
   showConsumerUI() {
-    this.appInfo.hasBlocked = true;
-    this.isOpen = false;
+    this.appInfo.hasBlocked = true ;
     this.appInfo.navigateToPage('consumerui');
     this.changeDetector.detectChanges();
     const self = this;
-
     setTimeout(function(that) {
       that.changeDetector.detectChanges();
     }, 1000, self);
@@ -146,17 +129,13 @@ export class PinpadComponent implements OnInit, OnDestroy {
 
   onValidatePinResult(data: ApiResult) {
     console.log('onValidatePinResult ->', data);
-    this.pinNumber = '';
+
     if (data.Success) {
       console.log('pubsub out, switchToServiceUI');
-      this.isOpen = false;
       PublishEvent.Create(PubSubTopic.switchToServiceUI, this.objectId)
         .SetDataArgumentTo(data)
         .Send();
-    } else {
-      this.accessDeniedMessage = LocalizationService.LocalizeString('keypad.access.denied');
     }
-    this.changeDetector.detectChanges();
   }
 
   onKeyPress(e: KeyboardEvent) {
@@ -167,5 +146,4 @@ export class PinpadComponent implements OnInit, OnDestroy {
       this.isOpen = false ;
     }
   }
-
 }

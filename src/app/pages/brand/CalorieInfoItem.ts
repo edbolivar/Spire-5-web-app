@@ -4,7 +4,6 @@ import Text = PIXI.Text;
 import TextUtils from '../../utils/TextUtils';
 import { CalorieCup } from '../../universal/app.types';
 import {LocalizationService} from '../../services/localization.service';
-import { AppInfoService } from '../../services/app-info.service';
 
 export default class CalorieInfoItem extends Sprite {
 
@@ -41,11 +40,11 @@ export default class CalorieInfoItem extends Sprite {
             const calorieLocalization = LocalizationService.LocalizeString('calories.label');
             let line1Label = self._cup.Line1Label;
             line1Label = line1Label.replace('${calorie}', calorieLocalization);
-            this._line1Label = new Text(line1Label, TextUtils.getStyleBody(24,AppInfoService.instance.isAda ? 0x798989 : 0xffffff, 'bold', 'right'));
+            this._line1Label = new Text(line1Label, TextUtils.getStyleBody(24, 0xffffff, 'bold', 'right'));
 
             self.addChild(this._line1Label);
 
-            this._line2Label = new Text(self._cup.Line2Label, TextUtils.getStyleBody(24, AppInfoService.instance.isAda ? 0x798989 : 0xffffff, 'bold', 'right'));
+            this._line2Label = new Text(self._cup.Line2Label, TextUtils.getStyleBody(24, 0xffffff, 'bold', 'right'));
             this._line2Label.y = this._line1Label.y + this._line1Label.height;
             self.addChild(this._line2Label);
 

@@ -1,179 +1,132 @@
-import * as _ from "lodash";
-import { Sprite, Rectangle } from "pixi.js";
-import AnimatedSpriteController from "../../display/components/AnimatedSpriteController";
-import SimpleSignal from "simplesignal";
-import { AppInfoService } from "../../services/app-info.service";
-import { PourableDesign, DesignAnimation } from "../../universal/app.types";
-import { JsUtil } from "../../universal/JsUtil";
-import { createImageToFit } from "../../utils/LayoutUtils";
-import { asyncForEach } from "../../utils/asyncForEach";
-import Box from "../../display/shapes/Box";
-
-export type SelectedFlavorArgs = (selectedFlavorIds: string[]) => void;
+import * as _ from 'lodash';
+import Sprite = PIXI.Sprite;
+import Text = PIXI.Text;
+import FlavorListItem from './FlavorListItem';
+import TextUtils from '../../utils/TextUtils';
+import Config from '../../data/Config';
+import LegacyAnimatedSprite from '../../display/components/LegacyAnimatedSprite';
+import SimpleSignal from 'simplesignal';
+import {AppInfoService} from '../../services/app-info.service';
+import {FlavorDesign, FlavorDesignVisual, PourItem, PourableDesign} from '../../universal/app.types';
+import LayoutUtils from '../../utils/LayoutUtils';
 
 export default class FlavorMix extends Sprite {
+
+  public static readonly HEIGHT = 100;
+  
+  private _flavorIds: string[];
+  private _flavorMixs: any[];
+
+  private _onChanged = new SimpleSignal<(selectedFlavorIds: string[]) => void>();
+
   private _appInfo: AppInfoService;
+  private _flavors: FlavorDesign[] = [];
   private _beverage: PourableDesign;
-  private _destroyLater: any[] = [];
+
+  private _brandIngredient: PourableDesign;
+  private _flavorIngredients: FlavorDesign[];
+
   private _logo: Sprite;
-  private _onChanged = new SimpleSignal<SelectedFlavorArgs>();
 
   constructor(beverage: PourableDesign, appInfo: AppInfoService) {
     super();
 
     this._beverage = beverage;
+
     this._appInfo = appInfo;
-  }
+    this._flavors = appInfo.ConfigurationData.flavors;
 
-  public destroy() {
-    if (this._destroyLater) {
-      this._destroyLater.forEach(item => {
-        item.destroy();
-      });
+    // this._flavorIds = this._beverage.flavorShots;
+    
 
-      delete this._destroyLater;
-    }
+    // once your here, you need to get the graphic for the brand
+    // and the images for the flavors, you'll go get those 
+    // from the appInfo.ConfigurationData using
 
-    if (this._logo) {
-      this._logo.destroy();
-      delete this._logo;
-    }
+    // this._beverage.pourItem.brandId to find the design/logo in configurationdata.brands
+    // then._beverate.pourItem.flavorIds to find the design/logs in configurationdata.flavors
+    // so using the above, you get this data,then you know whatlogo's to use
+    // private _brandIngredient: PourableDesign;
+    //  private _flavorIngredients: FlavorDesign[];
 
-    super.destroy();
+
+    
   }
 
   public get onChanged() {
     return this._onChanged;
   }
 
-  public async prepare() {
-    const brandId = this._beverage.pourItem.brandId;
-    const brand = this._appInfo.ConfigurationData.pourables.brands.find(
-      b => b.id === brandId
-    );
+  public prepare(): Promise<void> {
+    return new Promise((resolve) => {
 
-    const { flavorDirection } = this._appInfo.ConfigurationData.platform;
-    const flavorMix = this._appInfo.isAda
-      ? this._appInfo.ConfigurationData.platform.layout.flavorMixAda
-      : this._appInfo.ConfigurationData.platform.layout.flavorMix;
+      const listItemPromises: Array<Promise<void>> = [];
 
-    const flavorMixConfig = this._appInfo.isAda
-      ? this._appInfo.ConfigurationData.platform.flavorMixConfigAda
-      : this._appInfo.ConfigurationData.platform.flavorMixConfig;
+      this._flavorMixs = [];
+      var px = 200;
+      const py = 150;
+      var noBrandId:Boolean = true;
+      var brandId =  this._beverage.pourItem.brandId;
+      this._appInfo.ConfigurationData.pourables.brands.map((brand: PourableDesign)=>{
+        console.log('looking', brand.id);
+        if(brand.id === brandId) {
+          this._logo = Sprite.fromImage(brand.design.assets.logoBrand);
+          noBrandId = false;
+        }
+      });
 
-    const horizontal = flavorDirection === "Horizontal" || this._appInfo.isAda;
-
-    const mixFlavorIds = this._beverage.pourItem.flavorIds;
-
-    const flavors = this._appInfo.ConfigurationData.flavors.filter(
-      flavor => mixFlavorIds.indexOf(flavor.id) !== -1
-    );
-
-    if (!brand) {
-      console.log(`Could not find brand '${brandId}' in FlavorMix`);
-      return;
-    }
-
-    const {
-      logoSize,
-      logoMargin,
-      plusImageSize,
-      flavorImageSize,
-      flavorImageMargin
-    } = flavorMixConfig;
-
-    const maxItemSize = Math.max(logoSize, plusImageSize, flavorImageSize);
-
-    let totalWidth = 0;
-    let totalHeight = 0;
-
-    this._logo = await createImageToFit(
-      new Rectangle(
-        0,
-        0,
-        horizontal ? logoSize : maxItemSize,
-        horizontal ? maxItemSize : logoSize
-      ),
-      brand.design.assets.logoBrand
-    );
-    this.addChild(this._logo);
-    this._destroyLater.push(this._logo);
-
-    if (horizontal) {
-      totalWidth = logoSize + logoMargin;
-      totalHeight = maxItemSize;
-    } else {
-      totalWidth = maxItemSize;
-      totalHeight = logoSize + logoMargin;
-    }
-
-    await asyncForEach(flavors, async flavor => {
-      const plusSignRect = new Rectangle(
-        horizontal ? totalWidth : 0,
-        horizontal ? 0 : totalHeight,
-        horizontal ? plusImageSize : maxItemSize,
-        horizontal ? maxItemSize : plusImageSize
-      );
-
-      const plusSignImage = await createImageToFit(
-        plusSignRect,
-        `./assets/ui/${flavor.id}.png`
-      );
-      this.addChild(plusSignImage);
-      this._destroyLater.push(plusSignImage);
-
-      if (horizontal) {
-        totalWidth += plusImageSize;
-      } else {
-        totalHeight += plusImageSize;
+      if(noBrandId === true) {
+        this._logo = Sprite.fromImage("");
       }
+      
+      this._beverage.design.assets.bfConnector = "./assets/attractor/b_f_connector.png";
+      this._logo.x = px;
+      this._logo.y = py;
+      this._logo.position.set(this._logo.x - this._logo.width * 0.5, this._logo.y - FlavorMix.HEIGHT * 0.5);
+      this.addChild(this._logo);
 
-      const designAnimation: DesignAnimation = JsUtil.mapToNewObject(
-        {
-          id: flavor.id,
-          image: flavor.select.asset,
-          frameWidth: flavor.select.width,
-          frameHeight: flavor.select.height,
-          fps: flavor.select.fps * 0.75,
-          frames: flavor.select.frames,
-          scale: flavor.select.scale
-        },
-        new DesignAnimation()
-      );
+      px += FlavorMix.HEIGHT * 2;
+      this._flavorIds =  this._beverage.pourItem.flavorIds;
+      this._flavors.forEach((flavor) => {
+        const flavorGoodForPourable = _.find(this._flavorIds, function (id) {
+          return flavor.id === id;
+        });
 
-      const flavorItem = new AnimatedSpriteController(designAnimation);
-      flavorItem.loop = false;
-      flavorItem.parent = this;
+        if (flavorGoodForPourable) {
 
-      if (horizontal) {
-        flavorItem.width = flavorImageSize;
-        flavorItem.height = maxItemSize;
-        flavorItem.originalX =
-          totalWidth + flavorImageSize / 2 + flavorImageMargin;
-        flavorItem.originalY = maxItemSize / 2;
-      } else {
-        flavorItem.width = maxItemSize;
-        flavorItem.height = flavorImageSize;
-        flavorItem.originalX = maxItemSize / 2;
-        flavorItem.originalY =
-          totalHeight + flavorImageSize / 2 + flavorImageMargin;
-      }
+          var bfconn = Sprite.fromImage(this._beverage.design.assets.bfConnector);
+          bfconn.x = px;
+          bfconn.y = py + 50;
+          bfconn.position.set(bfconn.x - FlavorMix.HEIGHT * 0.5, bfconn.y - FlavorMix.HEIGHT * 0.5);
+          this.addChild(bfconn);
 
-      flavorItem.play();
-      this._destroyLater.push(flavorItem);
+          px += FlavorMix.HEIGHT;
 
-      if (horizontal) {
-        totalWidth += flavorImageSize + flavorImageMargin * 2;
-      } else {
-        totalHeight += flavorImageSize + flavorImageMargin * 2;
-      }
+          this._flavorMixs.push(bfconn);
+
+          var flavorItem = new LegacyAnimatedSprite(flavor.select.asset, flavor.select.width, flavor.select.height, flavor.select.frames, flavor.select.fps, flavor.select.scale);
+          flavorItem.loop = false;
+          flavorItem.x = px;
+          flavorItem.y = py + 50;
+          this.addChild(flavorItem);
+
+          px += FlavorMix.HEIGHT;
+          this._flavorMixs.push(flavorItem);
+        }
+      });
+
+      Promise.all(listItemPromises).then(() => {
+        resolve();
+      });
     });
-
-    if (horizontal) {
-      const vw = this._appInfo.ConfigurationData.platform.width;
-      this.position.set(vw / 2 - totalWidth / 2, flavorMix.y);
-    } else {
-      this.position.set(flavorMix.x, flavorMix.y);
-    }
   }
+
+  public destroy() {
+    this._flavorMixs.forEach((flavorItems) => {
+      flavorItems.destroy();
+    });
+    this._logo.destroy();
+    super.destroy();
+  }
+
 }

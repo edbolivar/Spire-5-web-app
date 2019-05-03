@@ -33,12 +33,12 @@ export class LocalizationService {
 
   static setCurrentPrimaryOrSecondary(primaryOrSecondary: string) {
     if (primaryOrSecondary === 'primary') {
-      // console.log('changing language to ', LocalizationService.instance.localizationModel.primaryLocalization.CountryLanguageCode);
+      console.log('changing language to ', LocalizationService.instance.localizationModel.primaryLocalization.CountryLanguageCode);
       LocalizationService.instance.currentMapping = this.instance.localizationModel.primaryLocalization.ResourceStrings;
     }
     // in order to switch the secondary language has to have a language too
     if (primaryOrSecondary === 'secondary' && LocalizationService.instance.localizationModel.secondaryLocalization.getHasItems()) {
-      // console.log('changing language to ', LocalizationService.instance.localizationModel.secondaryLocalization.CountryLanguageCode);
+      console.log('changing language to ', LocalizationService.instance.localizationModel.secondaryLocalization.CountryLanguageCode);
       LocalizationService.instance.currentMapping = this.instance.localizationModel.secondaryLocalization.ResourceStrings;
     }
     LocalizationService.instance.localizePixiTextObjects();
@@ -66,42 +66,40 @@ export class LocalizationService {
     PublishEvent.Create(PubSubTopic.localizationChanged, this.objectId).Send();
   }
 
-  registerPixiTextObject(resourceId: string, pixiText: PIXI.Text, objectIdOfConsumer: number) {
+   registerPixiTextObject(resourceId: string, pixiText: PIXI.Text, objectIdOfConsumer: number) {
+    // console.log('Registering the new object...');
     const newItem = new PixiLocalizationItem(resourceId, pixiText, objectIdOfConsumer);
 
-    if (!this._pixiTextByResourceId[resourceId]) {
-      this._pixiTextByResourceId[resourceId] = [];
-    }
-    const theArray: PixiLocalizationItem[] = this._pixiTextByResourceId[resourceId];
-
-    theArray.push(newItem);
+    this._pixiTextByResourceId[resourceId] = newItem;
   }
 
   localizePixiTextObjects() {
-    const self = this;
+    // iterate PixiTextByResourceId calling LocalizeString and assigning to text property
 
-    Object.keys(this._pixiTextByResourceId).forEach(function(propertyName) {
-      const theArray: PixiLocalizationItem[] = self._pixiTextByResourceId[propertyName];
-      _.forEach(theArray, function (e: PixiLocalizationItem) {
-        e.pixiText.text = LocalizationService.LocalizeString(e.resourceId);
-      });
+    // Q - when running onDataReady, we run this method.
+    // are we trying to build a list of localization items based on all the objects in
+    // the current mapping? or are all the objects already set at this point and we're just localizing them...
+
+    // console.log('localizePixiTextObjects');
+
+    _.forEach(this._pixiTextByResourceId, function(e, k, theArray) {
+      theArray[k].pixiText.text = LocalizationService.LocalizeString(e.resourceId);
     });
+
+    // console.log('completed pixiText', this._pixiTextByResourceId);
   }
 
   unregisterPixiTextObjectsByConsumer(objectIdOfConsumer: number) {
-    const self = this;
+    // remove items that belong to this object id of the incoming consumer
+    // in destroy of callers, add this call
+    // we remove the property from this._pixiTextByResourceId
 
-    Object.keys(this._pixiTextByResourceId).forEach(function(propertyName) {
-      const theArray: PixiLocalizationItem[] = self._pixiTextByResourceId[propertyName];
-      const newArray: PixiLocalizationItem[] = [];
+    // console.log('Deleting object related to objectId', objectIdOfConsumer);
 
-      _.forEach(theArray, function(item) {
-        if (item.objectIdOfConsumer !== objectIdOfConsumer) {
-          newArray.push(item);
-        }
-      });
+    this._pixiTextByResourceId = _.omitBy(
+      this._pixiTextByResourceId,
+        e => e.objectIdOfConsumer === objectIdOfConsumer
+    );
 
-      self._pixiTextByResourceId[propertyName] = <PixiLocalizationItem[]>newArray;
-    });
   }
 }

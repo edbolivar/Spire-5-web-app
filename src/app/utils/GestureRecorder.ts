@@ -4,9 +4,6 @@
 // import {Point, Rectangle} from 'pixi.js/dist/pixi.min.js';
 import {Point, Rectangle} from 'pixi.js';
 import {THROW_IF_NOT_FOUND} from '@angular/core/src/di/injector';
-import { RSA_PKCS1_OAEP_PADDING } from 'constants';
-import { bind1 } from '../../../node_modules/@angular/core/src/render3/instructions';
-import { max } from '../../../node_modules/rxjs/operators';
 
 
 const EVENT_GESTURE_COMPLETED = 'onGestureCompleted';
@@ -19,15 +16,14 @@ export class Path {
   }
 
   public fromPoints(__points: Point[], __clone: Boolean = true, __optimize: Boolean = false): Path {
-    const path: Path = new Path();
+    var path: Path = new Path();
     if (__clone) {
-      for (let i = 0; i < __points.length; i++) {
+      for (var i = 0; i < __points.length; i++)
         path.points.push(__points[i]);
-      }
     } else {
       path.points = __points;
     }
-    if (__optimize) { path.simplify(); }
+    if (__optimize) path.simplify();
     return path;
   }
 
@@ -44,9 +40,9 @@ export class Path {
 
   simplify(): void {
     // Simplify the path by removing middle points in lines that have the same angle
-    // 			var pl:int = points.length;
+    //			var pl:int = points.length;
     // TODO: better understood closed loops
-    for (let i = 1; i < this.points.length - 1; i++) {
+    for (var i = 1; i < this.points.length - 1; i++) {
       if (this.points[i].equals(this.points[i - 1]) || Math.atan2(this.points[i].y - this.points[i - 1].y, this.points[i].x - this.points[i - 1].x) == Math.atan2(this.points[i + 1].y - this.points[i].y, this.points[i + 1].x - this.points[i].x)) {
         // Same point or same angle
         this.points.splice(i, 1);
@@ -57,18 +53,18 @@ export class Path {
 
   getBounds(): Rectangle {
     // Find the bounds of all the points in the path
-    let i: number;
-    let minX: number;
-    let maxX: number;
-    let minY: number;
-    let maxY: number;
+    var i: number;
+    var minX: number;
+    var maxX: number;
+    var minY: number;
+    var maxY: number;
 
     // Read minimum and maximums
     for (i = 0; i < this.points.length; i++) {
-      if (isNaN(minX) || this.points[i].x < minX) { minX = this.points[i].x; }
-      if (isNaN(maxX) || this.points[i].x > maxX) { maxX = this.points[i].x; }
-      if (isNaN(minY) || this.points[i].y < minY) { minY = this.points[i].y; }
-      if (isNaN(maxY) || this.points[i].y > maxY) { maxY = this.points[i].y; }
+      if (isNaN(minX) || this.points[i].x < minX) minX = this.points[i].x;
+      if (isNaN(maxX) || this.points[i].x > maxX) maxX = this.points[i].x;
+      if (isNaN(minY) || this.points[i].y < minY) minY = this.points[i].y;
+      if (isNaN(maxY) || this.points[i].y > maxY) maxY = this.points[i].y;
     }
 
     return new Rectangle(minX, minY, maxX - minX, maxY - minY);
@@ -77,8 +73,8 @@ export class Path {
   normalize(): void {
     // Make sures all coordinates are from 0 to 1 by scaling the whole path back
 
-    const bounds: Rectangle = this.getBounds();
-    let i: number;
+    var bounds: Rectangle = this.getBounds();
+    var i: number;
 
     // Apply mapped values
     for (i = 0; i < this.points.length; i++) {
@@ -184,17 +180,15 @@ export class GestureRecorder {
   previousStrokesNormalized: Path[];
 
   currentStroke: Point[];
-  originCurrentStroke: Point[];
   previousGestureId: String;
+
   minimumHeight: Number;					// Used when judging multi-stroke gestures
   minimumWidth: Number;					// Used when judging multi-stroke gestures
   minimumLength: Number;					// Used on every stroke
-  public gestureWidth: number = 0;
-  public gestureHeight:number = 0;;
+
   constructor() {
     this.maxStrokes = 3;
     this.currentStroke = null;
-    this.originCurrentStroke =  null;
     this.previousGestureId = null;
 
     this.previousStrokesRaw = new Array();
@@ -247,8 +241,6 @@ export class GestureRecorder {
     if (!this._isRecording) {
       this._isRecording = true;
       this.currentStroke = [];
-      this.originCurrentStroke = [];
-
       this.recordPoint(event);
     }
   }
@@ -293,35 +285,9 @@ export class GestureRecorder {
     // mousemove
     if (this._isRecording) {
       this.currentStroke.push(new Point(event.clientX, event.clientY));
-      this.originCurrentStroke.push(new Point(event.clientX, event.clientY));
     }
   }
 
-  getGestureWidthAndHeight(){
-    var minX:Point = this.originCurrentStroke[0];
-    var maxX:Point = this.originCurrentStroke[0];
-    var minY:Point = this.originCurrentStroke[0];
-    var maxY:Point = this.originCurrentStroke[0];
-    for(var i = 0; i < this.originCurrentStroke.length; i++) {
-      if(minX.x > this.originCurrentStroke[i].x) {
-        minX = this.originCurrentStroke[i];
-      }
-
-      if(maxX.x < this.originCurrentStroke[i].x) {
-        maxX = this.originCurrentStroke[i];
-      }
-
-      if(minY.y > this.originCurrentStroke[i].y) {
-        minY = this.originCurrentStroke[i];
-      }
-      
-      if(maxY.y < this.originCurrentStroke[i].y) {
-        maxY = this.originCurrentStroke[i];
-      }
-    }
-    this.gestureHeight =  maxY.y - minY.y;
-    this.gestureWidth = maxX.x - minX.x;
-  }
   findClosestGestureId(): String {
     // Find the pre-recorded gesture that's closest to the one just drawn
 //    var ti:uint = getTimerUInt();

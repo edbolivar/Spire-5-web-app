@@ -2,10 +2,9 @@
               (keydown)="onKeyPress($event)"
               modal
 >
-  <h1 style="text-align: center; color: red;">{{accessDeniedMessage}}</h1>
+  <paper-input type="password" [value]="pinNumber" readonly="true" [label]="pinHeaderText" style=" text-align: center;line-height: 24px; font-size: 24px; font-weight:400; " ></paper-input>
   <div style="width: 250px;">
-  <paper-input type="password" class="input1" [value]="pinNumber" readonly="true" [label]="pinHeaderText"></paper-input>
   <app-button-panel [items-source]="keypadButtons"></app-button-panel>
   </div>
-  <div class="bottom_text">{{ bottomText }}</div>
+  <div style=" text-align: center; width: 250px; ">{{ bottomText }}</div>
 </paper-dialog>

@@ -84,6 +84,7 @@ export default class BlobShape extends Graphics {
   }
 
   private drawBlobShape() {
+
     this.clear();
 
     if (this.backgroundFillAlpha() > 0) {

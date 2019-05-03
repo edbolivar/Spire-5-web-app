@@ -16,46 +16,49 @@ export class JsUtil {
   }
 
   static clone(objectToClone: any) {
-    const contents = JSON.stringify(objectToClone);
-    const newObj = JSON.parse(contents);
+    var contents = JSON.stringify(objectToClone);
+    var newObj = JSON.parse(contents);
     return newObj;
   }
 
   static zeroPad(num, numZeros) {
-    const n = Math.abs(num);
-    const zeros = Math.max(0, numZeros - Math.floor(n).toString().length );
-    let zeroString = Math.pow(10, zeros).toString().substr(1);
+    var n = Math.abs(num);
+    var zeros = Math.max(0, numZeros - Math.floor(n).toString().length );
+    var zeroString = Math.pow(10, zeros).toString().substr(1);
 
-    if (num < 0) {
+    if( num < 0 ) {
       zeroString = '-' + zeroString;
     }
 
-    return zeroString + n;
+    return zeroString+n ;
   }
 
   static logPourConfig(brandButton: ButtonModel, flavorButtons: ButtonModel[]) {
-    let flavors = '';
-    _.forEach(flavorButtons, function(flavorButton: ButtonModel) {
+      let flavors = '';
+      _.forEach(flavorButtons, function(flavorButton: ButtonModel){
 
-      if (flavors.length > 0) {
-        flavors += ', ';
-      }
+        if (flavors.length > 0) {
+          flavors += ', ';
+        }
 
-      flavors += flavorButton.Label ;
-    });
+        flavors += flavorButton.Label ;
+      });
 
-    console.log(`Pour: ${brandButton.Label}\r\n  Flavors: ${flavors}`);
+      const msg = `Pour: ${brandButton.Label}\r\n  Flavors: ${flavors}` ;
+      console.log(msg);
   }
 
 
-  static formatSeconds(seconds: number) {
+  static formatSeconds(seconds:number)
+  {
     // converts seconds to hhh:mm:ss
-    const nseconds = Number(seconds) ;
-    const h = Math.floor(nseconds / 3600);
-    const m = this.zeroPad(Math.floor(nseconds % 3600 / 60), 2);
-    const s = this.zeroPad(Math.floor(nseconds % 3600 % 60), 2);
+    let nseconds = Number(seconds) ;
+    let h = Math.floor(nseconds / 3600);
+    let m = this.zeroPad(Math.floor(nseconds % 3600 / 60),2);
+    let s = this.zeroPad(Math.floor(nseconds % 3600 % 60),2);
 
-    return `${h}:${m}:${s}`;
+    let result = `${h}:${m}:${s}` ;
+    return result;
   }
 
   static generateId() {
@@ -65,7 +68,7 @@ export class JsUtil {
 
 
 
-  static extractDocTypeFromDocumentId(key: string) {
+  static extractDocTypeFromDocumentId(key: string){
 
     return key ;
   }
@@ -91,7 +94,7 @@ export class JsUtil {
       // console.log('TargetObject ', propertyName,': ', targetObject[propertyName]);
 
       // if the property exists in the sourceObject, then we want to bring it across
-      if (propertyName in sourceObject && sourceObject[propertyName] != null) {
+      if (propertyName in sourceObject && sourceObject[propertyName] != null){
           if ( targetObject[propertyName] instanceof Date) {
             targetObject[propertyName] = new Date(sourceObject[propertyName].toString()) ;
           } else {

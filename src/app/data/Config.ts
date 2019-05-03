@@ -91,9 +91,7 @@ export default class Config {
           // Replaces a file's content with another object's
           const substitutionKeys = Object.keys(substitutions);
           Object.keys(fileContents).forEach((key) => {
-            if (substitutionKeys.indexOf(key) !== -1) {
-              fileContents[key] = substitutions[key];
-            }
+            if (substitutionKeys.includes(key)) fileContents[key] = substitutions[key];
           });
         }
         return this.parseObject(fileContents);
@@ -154,7 +152,7 @@ export default class Config {
       const otherNodes = splitPath.slice(1).join('.');
       if (firstNode === '*') {
         // All sub-nodes
-        const newData = Array.isArray(data) ? [...data] : {...data};
+        let newData = Array.isArray(data) ? [...data] : {...data};
         const keys = Object.keys(newData);
         for (const key of keys) {
           newData[key] = this.convertFields(data[key], otherNodes, convertFunc);

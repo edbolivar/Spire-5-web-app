@@ -4,6 +4,11 @@ import VideoPlayer from '../../display/components/VideoPlayer';
 import Easing from '../../../transitions/Easing';
 import {JsUtil} from '../../universal/JsUtil';
 
+// import Config from 'data/Config';
+// import Easing from 'transitions/Easing';
+// import VideoPlayer from 'display/components/VideoPlayer';
+
+
 export default class LiquidVideo extends Sprite {
   objectId: number;
   private _videos: VideoPlayer[];
@@ -36,7 +41,7 @@ export default class LiquidVideo extends Sprite {
       video.onEnded.add(this.onVideoEnded.bind(this));
       this._container.addChild(video);
       this._videos.push(video);
-    } 
+    }
 
     this.resizeAllVideos();
     this.redrawPoured();
@@ -90,6 +95,7 @@ export default class LiquidVideo extends Sprite {
   }
 
   public destroy() {
+    console.log('destory.LiquidVideo');
     ticker.shared.remove(this.onTick);
     this._videos.forEach((video, index) => {
       video.destroy();
@@ -120,7 +126,7 @@ export default class LiquidVideo extends Sprite {
     }
   }
 
-  private loopVideo(video: VideoPlayer) {
+  private loopVideo(video: VideoPlayer){
     video.visible = true;
     video.currentTime = 0;
     video.loop = true;

@@ -1,17 +1,15 @@
 import {Injectable, Injector} from '@angular/core';
 
-import { WebGLRenderer, CanvasRenderer } from 'pixi.js';
-import {Router} from '@angular/router';
+import * as _ from 'lodash';
+import {Router, NavigationEnd} from '@angular/router';
 import { SocketClient } from './socket.client';
 import {AppConfig, ScreenMetrics} from '../universal/app.types';
+import {SubscribeEvent, PubSubEventArgs, PubSubSubscriptionToken, PubSubTopic} from '../universal/pub-sub-types';
 import {PubSubService} from '../universal/pub-sub.service';
 import {environment} from '../../environments/environment';
 import {JsUtil} from '../universal/JsUtil';
 import {ConfigurationData} from '../universal/app.types';
 import {LocalizationService} from './localization.service';
-import { AdaNavigationService } from './ada-navigation.service';
-// import { ObjectRecycler } from '../data/ObjectRecycler';
-// import { GarbageCan } from '../data/GarbageCan';
 
 
 @Injectable()
@@ -28,18 +26,9 @@ export class AppInfoService {
   _toastMessage = '';
   isBlocker = false;
   hasBlocked = false;
-  version = '93';
   incomingEnvironment: any = environment ;
   localizationService: LocalizationService ;
-  numberOfBrands: number ;
-  isAda = false;
-  isPinPassed = false;
-  pswipeCount: number = 0;
-  // objectRecycler: ObjectRecycler = new ObjectRecycler();
-  // garbageCan: GarbageCan = new GarbageCan();
 
-  // temp until we get unitstate endpoint implemented
-  unitLocation = 'US';
   screenMetrics: ScreenMetrics =
     {
       // all temp, should be fed in from backend
@@ -57,16 +46,12 @@ export class AppInfoService {
       'keypadHeight' : '75px'
 
     };
-  adaNavigationService: AdaNavigationService;
-  renderer: WebGLRenderer | CanvasRenderer;
 
   constructor(public pubsub: PubSubService,
               private router: Router,
-              private injector: Injector
-            ) {
+              private injector: Injector) {
     this.objectId = JsUtil.getObjectId();
     console.log('ctor.appInfo', this.objectId);
-    console.log('version', this.version);
 
     // a crutch for the fluent types that are not resolved by DI
     AppInfoService.instance = this ;
@@ -88,14 +73,13 @@ export class AppInfoService {
 
   loadEnvironmentFile() {
     // copy props to the config property object on this class
-    JsUtil.mapToNewObject(this.incomingEnvironment, this.config);
+    JsUtil.mapToNewObject(this.incomingEnvironment, this.config) ;
     this.isBlocker = this.config.isBlocker;
     console.log('=Environment=>', this.config, this.isBlocker);
   }
 
   adjustPathsForOrigin() {
     this.origin = location.origin + '/';
-    console.log('this.origin', this.origin);
     if (this.origin.startsWith('http://localhost')) {
       // this.apiBaseUrl = `http://localhost:${this.config.serverPort}/` ;
     } else {

@@ -3,50 +3,48 @@
  */
 import RandomGenerator from '../../utils/RandomGenerator';
 
+
 export default class NoiseSequence {
-  // Constants
-  private static TWO_PI: number = Math.PI * 2;
 
-  // Properties
-  private octaves: number; // int
-  private randoms: number[];
-  private powers: number[]; // int
+	// Constants
+	private static TWO_PI: number = Math.PI * 2;
 
-  // ================================================================================================================
-  // CONSTRUCTOR ----------------------------------------------------------------------------------------------------
+	// Properties
+	private octaves: number; // int
+	private randoms: number[];
+	private powers: number[]; // int
 
-  constructor(octaves: number = 5, randomSeed: number = -1) {
-    this.octaves = octaves;
-    this.randoms = [];
-    let pos = 0;
-    while (this.randoms.length < octaves) {
-      this.randoms.push(
-        RandomGenerator.getFromSeed(randomSeed < 0 ? -1 : randomSeed + pos++) *
-          NoiseSequence.TWO_PI
-      );
-    }
 
-    this.powers = [];
-    while (this.powers.length < octaves) {
-      this.powers.push(Math.pow(2, this.powers.length));
-    }
-  }
+	// ================================================================================================================
+	// CONSTRUCTOR ----------------------------------------------------------------------------------------------------
 
-  // ================================================================================================================
-  // PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
+    constructor(octaves: number = 5, randomSeed: number = -1) {
 
-  public getNumber(phase: number): number {
-    // Phase is 0-1
+        this.octaves = octaves;
+		this.randoms = [];
+		let pos = 0;
+		while (this.randoms.length < octaves) {
+			this.randoms.push(RandomGenerator.getFromSeed(randomSeed < 0 ? -1 : randomSeed + (pos++)) * NoiseSequence.TWO_PI);
+		}
 
-    const r = phase * NoiseSequence.TWO_PI;
+		this.powers = [];
+		while (this.powers.length < octaves) {
+			this.powers.push(Math.pow(2, this.powers.length));
+		}
+	}
 
-    let v = 0;
-    for (let i = 0; i < this.octaves; i++) {
-      v += Math.sin(r * this.powers[i] + this.randoms[i]);
-    }
+	// ================================================================================================================
+	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
 
-    v /= this.octaves;
+	public getNumber(phase: number): number {
+		// Phase is 0-1
 
-    return v;
-  }
+		const r = phase * NoiseSequence.TWO_PI;
+
+		let v = 0;
+		for (let i = 0; i < this.octaves; i++) v += Math.sin(r * this.powers[i] + this.randoms[i]);
+		v /= this.octaves;
+
+		return v;
+	}
 }

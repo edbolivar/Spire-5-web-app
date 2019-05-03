@@ -22,7 +22,6 @@ import {LocalizationService} from './services/localization.service';
 import { BlockerComponent } from './controls/blocker/blocker.component';
 import {ButtonPanelComponent} from './controls/button-panel/button-panel.component';
 import {ComponentMappingService} from './services/component-mapping.service';
-import { AdaNavigationService } from './services/ada-navigation.service';
 
 
 // https://github.com/HNeukermans/ng2-signalr
@@ -69,8 +68,7 @@ export function createConfig(): SignalRConfiguration {
     SocketClient,
     ConfigurationService,
     LocalizationService,
-    ComponentMappingService,
-    AdaNavigationService
+    ComponentMappingService
   ]
   ,
 

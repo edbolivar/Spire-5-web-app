@@ -1,7 +1,11 @@
-import { Rectangle, Texture, Sprite } from "pixi.js";
-import Box from "../display/shapes/Box";
-
 interface RectangleSize {
+  width: number;
+  height: number;
+}
+
+interface Rectangle {
+  x: number;
+  y: number;
   width: number;
   height: number;
 }
@@ -13,6 +17,15 @@ export interface LayoutRectangleParams {
   top?: string | number;
   bottom?: string | number;
   height?: string | number;
+}
+
+export interface LayoutRectangle {
+  left: number;
+  right: number;
+  width: number;
+  top: number;
+  bottom: number;
+  height: number;
 }
 
 export function fitInsideRectangle(contentSize: RectangleSize, container: Rectangle, round: boolean = false): Rectangle {
@@ -30,12 +43,12 @@ export function fitInsideRectangle(contentSize: RectangleSize, container: Rectan
   const newWidth = contentSize.width * newScale;
   const newHeight = contentSize.height * newScale;
 
-  const result = new Rectangle(
-    (container.width - newWidth) / 2,
-    (container.height - newHeight) / 2,
-    newWidth,
-    newHeight
-  );
+  const result = {
+    x: (container.width - newWidth) / 2,
+    y: (container.height - newHeight) / 2,
+    width: newWidth,
+    height: newHeight,
+  };
 
   if (round) {
     result.x = Math.round(result.x);
@@ -47,54 +60,16 @@ export function fitInsideRectangle(contentSize: RectangleSize, container: Rectan
   return result;
 }
 
-export async function createImageToFit(rect: Rectangle, textureName: string): Promise<Sprite> {
-  return new Promise<Sprite>((resolve) => {
-    const result: Sprite = new Sprite();
-
-    const setLogoScale = () => {
-      const t = result.texture;
-      const scaleX = rect.width / t.width;
-      const scaleY = rect.height / t.height;
-      const scale = Math.min(scaleX, scaleY);
-  
-      const newWidth = t.width * scale;
-      const newHeight = t.height * scale;
-      const offsetX = (rect.width - newWidth) / 2;
-      const offsetY = (rect.height - newHeight) / 2;
-  
-      result.scale.set(scale, scale);
-      result.position.set(
-        rect.left + offsetX,
-        rect.top + offsetY
-      );
-
-      if (result) {
-        resolve(result);
-      }
-    };
-  
-    const texture = Texture.fromImage(textureName);
-    result.texture = texture;
-    result.position.set(rect.left, rect.top);
-    
-    if (texture.width > 1) {
-      setLogoScale();
-    } else {
-      texture.on('update', setLogoScale);
-    }
-  });
-}
-
 /**
  * Convert a string unit to pixels
  */
-export function parseLayoutRectangle(rect: LayoutRectangleParams, containerWidth: number, containerHeight: number, isAda: boolean = false, adaBottom: string = ''): Rectangle {
+export function parseLayoutRectangle(rect: LayoutRectangleParams, containerWidth: number, containerHeight: number): LayoutRectangle {
   const newRect = {
     left: parseUnits(rect.left, containerWidth, containerHeight),
     right: parseUnits(rect.right, containerWidth, containerHeight),
     width: parseUnits(rect.width, containerWidth, containerHeight),
     top: parseUnits(rect.top, containerWidth, containerHeight),
-    bottom: parseUnits((isAda && adaBottom !== '') ? adaBottom : rect.bottom, containerWidth, containerHeight),
+    bottom: parseUnits(rect.bottom, containerWidth, containerHeight),
     height: parseUnits(rect.height, containerWidth, containerHeight),
   };
 
@@ -102,12 +77,14 @@ export function parseLayoutRectangle(rect: LayoutRectangleParams, containerWidth
   const h = refillDimensions(newRect.left, newRect.right, newRect.width, containerWidth);
   const v = refillDimensions(newRect.top, newRect.bottom, newRect.height, containerHeight);
 
-  return new Rectangle(
-    h.start,
-    v.start,
-    h.length,
-    v.length
-  );
+  return {
+    left: h.start,
+    right: h.end,
+    width: h.length,
+    top: v.start,
+    bottom: v.end,
+    height: v.length,
+  };
 }
 
 /**
@@ -136,6 +113,7 @@ function refillDimensions(start: number | null, end: number | null, length: numb
 }
 
 export function parseUnits(prop: string | number | undefined, containerWidth: number, containerHeight: number): number | null {
+  const maxUnits = 0;
   if (typeof (prop) === 'number') {
     return prop;
   } else if (typeof (prop) === 'string' && prop.length !== 0) {

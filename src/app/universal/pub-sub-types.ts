@@ -1,10 +1,12 @@
-import {JsUtil} from './JsUtil';
+import {JsUtil} from "./JsUtil";
+import {Observer} from 'rxjs/Observer';
+import {PubSubService} from './pub-sub.service';
 import {AppInfoService} from '../services/app-info.service';
 
 
-export class PubSubItem {
+export class PubSubItem{
   events: PubSubEventArgs[] = [];
-  constructor(public pubsubTopic: string) { }
+  constructor(public pubsubTopic: string){}
 }
 
 export interface Predicate<T> {
@@ -23,7 +25,7 @@ export class PubSubSubscriptionToken {
   allowMultipleSubscriptionsSameEventSameConsumer: boolean = false ;
   sendCurrentEventOnly: boolean = false ;
 
-  constructor(pubsubTopic: string, callback: (response) => void, consumerObjectId: number, filter?: Predicate<PubSubEventArgs>) {
+  constructor(pubsubTopic: string, callback: (response) => void, consumerObjectId: number, filter? : Predicate<PubSubEventArgs>){
     this.consumerObjectId = consumerObjectId ;
     this.pubsubTopic = pubsubTopic ;
     this.filterPredicate = filter ;
@@ -33,14 +35,14 @@ export class PubSubSubscriptionToken {
 
 
 export class PubSubEventArgs {
-  pubsubTopic: string ;
-  data: any ;
-  sourceObjectId: number ;
+  pubsubTopic : string ;
+  data : any ;
+  sourceObjectId : number ;
 
   /**
    * @param sourceObjectId should be specified WHEN the consumer there are multiple publishers of the same event, and it matters
    */
-  constructor(pubsubTopic: string, data: any, sourceObjectId: number = 0) {
+  constructor(pubsubTopic: string, data: any, sourceObjectId : number = 0){
     // were being explicit here so it is easy to read.
     this.pubsubTopic = pubsubTopic ;
     this.data = data ;
@@ -152,7 +154,7 @@ export class EventDescriptor {
 }
 
 export class PubSubTopic {
-  
+  static logEventToServer = 'log.event.to.server';
   static configurationDataReady = 'configuration.data.ready';
   static pourComplete = 'pour.complete';
 
@@ -170,20 +172,24 @@ export class PubSubTopic {
   static pdmDataReady  = 'product.datamodel.ready' ;
 
 
+  static start  = 'start' ;
+  static stop  = 'stop' ;
+
+
   static testIODriver = 'test.iodriver.event';
   static popupDialog = 'popup.dialog';
 
+  static testSendToServer  = 'test.send.to.server' ;
+  static testSendToClient  = 'test.send.to.client' ;
+
 
   // --- client to server ---
-  static logToServer = 'logToServer';
   static switchToServiceUI = 'switchToServiceUI';
   static pingServer = 'pingServer';
   static pingClientAck = 'pingClientAck';
 
-  static startPour = 'startPour';
-  static stopPour = 'stopPour';
-  static changeDx3Lighting = 'changeDx3Lighting';
-
+  static startPour = 'start.pour';
+  static stopPour = 'stop.pour';
 
 
   // --- server to client ---
@@ -200,12 +206,6 @@ export class PubSubTopic {
   static vibrateBody = 'vibrate.body';
   static localizationChanged = 'localization.changed';
 
-  static adaKeyPressed = 'adaKeyPressed'; 
-  static notifyKeyEvent = 'notifyKeyEvent';
-  static notifyBrandButtonChangeSelected = 'notifyBrandButtonChangeSelected';
-  static adaModeChanged = 'adaModeChanged';
-  static resetApp = 'resetApp';
-  
-  static authorized = 'authorized';
+  static AdaSettingChanged = 'AdaSetting.changed';
 }
 

@@ -1,22 +1,21 @@
-import { Sprite } from 'pixi.js';
+import {Sprite} from 'pixi.js';
+
 import Navigator from './Navigator';
-import { AppInfoService } from '../../services/app-info.service';
-import { IdleState, PlatformModel } from '../../universal/app.types';
+import {AppInfoService} from '../../services/app-info.service';
+import {IdleState, Platform} from '../../universal/app.types';
 
 export default class AbstractScreen extends Sprite {
+
   private _navigator: Navigator;
   public appInfo: AppInfoService;
-  public Platform: PlatformModel;
+  public Platform: Platform;
   public idleState: IdleState;
-
-  static _instance: AbstractScreen;
 
   constructor(appInfo: AppInfoService) {
     super();
     this.appInfo = appInfo;
     this.Platform = appInfo.ConfigurationData.platform;
     this.idleState = appInfo.ConfigurationData.idleState;
-    AbstractScreen._instance = this;
   }
 
   public get navigator() {
@@ -27,19 +26,11 @@ export default class AbstractScreen extends Sprite {
     this._navigator = navigator;
   }
 
-  public prepareToShow(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  public prepareToHide(): Promise<void> {
+  public prepare(): Promise<void> {
     return Promise.resolve();
   }
 
   public show(previousRoute?: string): Promise<void> {
-    return Promise.resolve();
-  }
-
-  public transition(transitionInfluence: number) {
     return Promise.resolve();
   }
 
@@ -48,7 +39,7 @@ export default class AbstractScreen extends Sprite {
   }
 
   public destroy() {
-    AbstractScreen._instance = null;
     super.destroy();
   }
 }
+

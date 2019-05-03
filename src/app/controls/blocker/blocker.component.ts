@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, ApplicationRef, HostListener } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ApplicationRef } from '@angular/core';
 import {AppInfoService} from '../../services/app-info.service';
 import {PublishEvent, PubSubTopic} from '../../universal/pub-sub-types';
 import {JsUtil} from '../../universal/JsUtil';
@@ -34,5 +34,4 @@ export class BlockerComponent implements OnInit {
           .Send();
       }
   }
-
 }

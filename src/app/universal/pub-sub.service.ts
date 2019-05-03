@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {PubSubEventArgs, PubSubSubscriptionToken, PubSubItem, EventDescriptor, PubSubTopic} from './pub-sub-types';
 
-import {JsUtil} from './JsUtil';
+import {JsUtil} from "./JsUtil";
 import * as _ from 'lodash';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class PubSubService {
 
   constructor() {
     this.objectId = JsUtil.getObjectId();
-    console.log('ctor.PubSubService', this.objectId);
+    console.log("ctor.PubSubService", this.objectId);
 
     // oldway
     this.configureObservables();
@@ -35,7 +35,6 @@ export class PubSubService {
 
   subscribe(token: PubSubSubscriptionToken) {
     const index = this.subscriptions.indexOf(token);
-
     if (index > -1) {
       console.log("WARNING - token already subscribed (indexOf, Instance)", index, token ) ;
       return ;

@@ -1,4 +1,7 @@
+import {Observer} from 'rxjs/Observer';
 import {JsUtil} from './JsUtil';
+import * as moment from 'moment';
+import LegacyAnimatedSprite from '../display/components/LegacyAnimatedSprite';
 
 export class AppConfig {
   production: false;
@@ -11,8 +14,6 @@ export class AppConfig {
   // this sets up the security for the internet deployment, we default it to false
   // so this only get's admin'd in the prod file
   isBlocker = false;
-  isSocketDebug = false ;
-  isConfigServiceDebug = false ;
 }
 
 export class ButtonType {
@@ -97,6 +98,8 @@ export class ButtonSet {
 }
 
 export class ScreenMetrics {
+
+
   buttonSize: string ;
   keypadButtonSize = '75px';
 
@@ -110,13 +113,13 @@ export class ScreenMetrics {
 
   serviceActionButtonWidth: string;
   serviceActionButtonHeight: string;
-  keypadWidth: string;
-  keypadHeight: string;
+  keypadWidth : string;
+  keypadHeight : string;
 }
 
 export class ButtonEventData {
   // var data = {type:e.type, buttonModel:this.buttonModel, tag:e} ;
-  constructor(public type: string, public buttonModel: ButtonModel, public viewModelObjectId, public tag?: any) {
+  constructor(public type: string, public buttonModel : ButtonModel, public viewModelObjectId, public tag?: any) {
   }
 }
 
@@ -136,58 +139,11 @@ export class StringKeyValuePair {
   value = '';
 }
 
-export class BlobButtonConfig {
-  adaIconScale: number = 1;
-  fontSize: number = 17;
-  strokeWidth: number = 3.5;
-}
-
-export class FlavorMixConfig {
-  logoSize: number = 0;
-  logoMargin: number = 0;
-  plusImageSize: number = 0;
-  flavorImageSize: number = 0;
-  flavorImageMargin: number = 0;
-}
-
-export class PlatformModel {
-  width = 1080;
-  height = 1920;
+export class Platform {
+  width: number;
+  height: number;
   frameRate: number;
-  homeMenu: PlatformMenuLayout;
-  flavorDirection = '';
-  brandConfig: BrandConfig = new BrandConfig();
-  brandConfigAda: BrandConfig = new BrandConfig();
-  flavorMixConfig: FlavorMixConfig = new FlavorMixConfig();
-  flavorMixConfigAda: FlavorMixConfig = new FlavorMixConfig();
-  blobButton: BlobButtonConfig = new BlobButtonConfig();
   layout: { [ key: string ]: any };
-}
-
-export class PlatformCoordinate {
-  top = '';
-  left = '';
-  right = '';
-  bottom = '';
-  height = '';
-  width = '';
-}
-
-export class PlatformMenuCoordinate {
-  x = 0;
-  y = 0;
-  radius = 0;
-}
-
-export class PlatformMenuLayout {
-  top = '';
-  left = '';
-  right = '';
-  bottom = '';
-  items: PlatformMenuCoordinate[] = [];
-  adaItems: PlatformMenuCoordinate[] = [];
-  adaleft = 0;
-  adabottom = '';
 }
 
 export class FlavorDesign {
@@ -216,52 +172,45 @@ export class FlavorDesignDetail {
   scale = 0;
 }
 
-export class Override {
-  xml = '';
-  path = '';
-  value = '';
-}
-
 export class ConfigurationData {
   objectId: number;
-  platform: PlatformModel = new PlatformModel();
+  platform: Platform;
   flavors: FlavorDesign[] = [];
   idleState: IdleState = new IdleState();
-  bubbles: DesignAnimation = new DesignAnimation();
+  bubbles: Bubbles = new Bubbles();
   animations: DesignAnimation[] = [];
   pourables: PourItemModel = new PourItemModel();
   localizedItems: ConsumerUILocalizationModel = new ConsumerUILocalizationModel();
-  mastHead: MastHead = new MastHead();
   home: Home = new Home();
-  overrides: Override[] = [];
-  isValidConfig = true;
-  outOfOrderEventArgs: OutOfOrderEventArgs = new OutOfOrderEventArgs();
-  
   constructor() {
     this.objectId = JsUtil.getObjectId();
   }
 }
+
+
 
 export class ResourceItem {
   name = '';
   url = '';
 }
 
-export class IdleState {  
+export class IdleState {
+  videos: ResourceItem[] = [];
   loop = false;
   delayHome = 0;
   delayBrand = 0;
-  colorLight = "";
-  videos: ResourceItem[] = [];
-  mastheads: ResourceItem[] = [];
-}
-
-export class MastHead {
-  videos: ResourceItem[] = [];
-  timeBetweenVideos = 0;
-  timeBetweenCycles = 0;
   colorLight = '';
 }
+
+export class Bubbles {
+  asset = '';
+  width = 0;
+  height = 0;
+  frames = 0;
+  fps = 0;
+  scale = 1;
+}
+
 export class CalorieCup {
   CupName = '';
   QtyInOunces = 0;
@@ -277,12 +226,11 @@ export class PourableDesign {
   pourItem: PourItem = new PourItem();
   name = '';
   flavors: string[] = [];
-  maxFlavors = 3;
   group = '';
   design: DesignNode = new DesignNode();
   Weighting = 0;
   CalorieCups: CalorieCup[] = [];
-
+  animation_id = '';  
   // added for Mixology Pour Page by Eugene
   // isMix = false;
   // flavorShots: string[] = [];
@@ -297,27 +245,8 @@ export class DesignNode {
   alphaCarbonation = 0;
   colors: DesignColors = new DesignColors();
   particlesHome: DesignParticles = new DesignParticles();
-  particlesBrand: DesignParticlesBrand[] = [];
-  secondaryAnimation: DesignSecondaryAnimation = new DesignSecondaryAnimation();
-  secondaryAnimationAda: DesignSecondaryAnimation = new DesignSecondaryAnimation();
-  secondaryAnimation_5: DesignSecondaryAnimation = new DesignSecondaryAnimation();
-  secondaryAnimationAda_5: DesignSecondaryAnimation = new DesignSecondaryAnimation();
-  particlesPerSecond = 3;
-  particlesSizeScale = 1;
-  particlesSpeedScale = 1;
-  colorLight: string[] = [];
-  scaleLogo: number = 1;
 }
 
-export class DesignSecondaryAnimation {
-  // based on beverages.xml
-
-  animationId: string = '';
-  alpha: number = 1;
-  scale: number = 1;
-  offsetX: number = 0;
-  offsetY: number = 0;
-}
 
 export class DesignAssets {
   logoHome = '';
@@ -325,30 +254,21 @@ export class DesignAssets {
   gradient = '';
   liquidIntro = '';
   liquidIdle = '';
-  liquidBackground = '' ;
+  liquidBackground = '' ;  
   mixName = '';
   bfConnector = '';
+
 }
 
 export class DesignColors {
   strokeHome = '';
   animationLight = '';
-  animationDark = '';
-  messageTitle = '#99ffffff';
-  messageSubtitle = '#99000000';
+  animationDark = '' ;
 }
 
 export class DesignParticles {
   colors: string[] = [];
   opacity: DesignOpacity = new DesignOpacity();
-}
-
-export class DesignParticlesBrand {
-  color = '';
-  opacityMin = 0;
-  opacityMax = 0 ;
-  frequency = 1;
-  colorVariation = 0;
 }
 
 export class DesignOpacity {
@@ -362,25 +282,7 @@ export class PourItemModel {
   topCombinations: PourableDesign[] = [] ;
   flavors: FlavorDesign[] = [];
   curatedMixes: PourableDesign[] = [];
-  pourMenu: PourableDesign[] = [];
-  homeMenu: PlatformMenuLayout = new PlatformMenuLayout();
 }
-
-export class BrandConfig {
-  flavorColumns = 0;
-  flavorColumnSpacing = 0;
-  flavorIconSize = 0;
-  flavorItemFontSize = 0;
-  flavorItemHeight = 0;
-  flavorItemLabelOffsetX = 0;
-  flavorMaxVisibleCount = 0;
-  flavorTitleAreaHeight = 0;
-  flavorTitleFontSize = 0;
-  flavorTitleOffsetX = 0;
-  pourButtonContentScale = 0;
-  pourButtonArrowOffset = 0;
-}
-
 export class PourItem {
   id = '';
   pourConfigurationId = '';
@@ -388,7 +290,6 @@ export class PourItem {
   isDisabled = false ;
   brandId = '';
   flavorIds: string[] = [];
-  isFocused = false ;
 }
 
 export class DesignParticleParentItem {
@@ -414,7 +315,7 @@ export class DesignAnimation {
   static getAnimationDefinition(animationId: string, animations: DesignAnimation[]): DesignAnimation {
     let i;
     for (i = 0; i < animations.length; ) {
-      if (animations[i].id === animationId) {
+      if(animations[i].id === animationId) {
         return animations[i];
       }
       i++;
@@ -439,14 +340,14 @@ export class DesignMetaballItem {
   scale = 1;
 
   static getMetaballItems(): DesignMetaballItem[] {
-    if (this.metaballItems == null) {
+    if(this.metaballItems == null) {
       // this.metaballItems = this.fromXMLList((FountainFamily.homeXML.child("metaballs")[0] as XML).children());
     }
     return this.metaballItems;
   }
 
   get animation(): DesignAnimation {
-    if (this.animation == null) {
+    if(this.animation == null) {
       // this.animation = DesignAnimation.getAnimationDefinition(animationId,FountainFamily.animationDefinitions);
     }
     return this.animation;
@@ -488,7 +389,7 @@ export class DesignSequenceItem {
   tinted = true;
 
   static getSequenceItems(): DesignSequenceItem[] {
-    if (this.sequenceItems == null) {
+    if(this.sequenceItems == null) {
       // this.sequenceItems = this.fromXMLList((FountainFamily.homeXML.child("sequences")[0] as XML).children());
     }
     return this.sequenceItems;
@@ -499,7 +400,7 @@ export class DesignSequenceItem {
   }
 
   get animation(): DesignAnimation {
-    if (this.animation == null) {
+    if(this.animation == null) {
       // this.animation = DesignAnimation.getAnimationDefinition(animationId,FountainFamily.animationDefinitions);
     }
     return this.animation;
@@ -538,18 +439,18 @@ export class ButtonModel {
   RowNumber = '';
   LegacyValves = '';
   UnitTypes = '';
-
   get pathToBackGroundImageAsUrl() {
     const outline = 'url(' + this.PathToBackgroundImage + ')' ;
     return outline ;
   }
   get isTapOnly(): boolean {
-    return (this.behaviors.indexOf('tap') > -1 && this.behaviors.length === 1) ;
+    return (this.behaviors.indexOf('tap') > -1 && this.behaviors.length == 1) ;
   }
   get isPressOnly(): boolean {
-    return (this.behaviors.indexOf('press') > -1 && this.behaviors.length === 1) ;
+    return (this.behaviors.indexOf('press') > -1 && this.behaviors.length == 1) ;
   }
 }
+
 
 export class ItemStateInfo {
   ItemType = '';
@@ -569,7 +470,6 @@ export enum ItemStatus {
 }
 
 export class ConsumerUILocalizationModel {
-  UnitLocation = 'US';
   primaryLocalization: LocalizationResourceModel = new LocalizationResourceModel();
   secondaryLocalization: LocalizationResourceModel = new LocalizationResourceModel();
 }
@@ -580,7 +480,7 @@ export class LocalizationResourceModel {
   ResourceStrings: LocalizedItems = new LocalizedItems();
 
   getHasItems(): boolean {
-    return Object.keys(this.ResourceStrings).length > 0;
+    return Object.keys(this.ResourceStrings).length > 0;  
   }
 }
 
@@ -601,12 +501,12 @@ export class Menu {
 }
 
 export class Metaball {
-  animation: string = '';
-  frequency: string = '';
-  centerX: string = '';
-  centerY: string = '';
-  angle: string = '';
-  scale: string = '';
+  animation: string= '';
+  frequency: string= '';
+  centerX: string= '';
+  centerY: string= '';
+  angle: string= '';
+  scale: string= '';
 }
 
 export class Metaballs {
@@ -617,7 +517,7 @@ export class PixiTextByResourceId {
   // key value pair
   // property name is key, PixiText object
   // to support localization
-  [key: string]: PixiLocalizationItem[];
+  [key: string]: PixiLocalizationItem;
 }
 
 export class PixiLocalizationItem {
@@ -627,33 +527,33 @@ export class PixiLocalizationItem {
 }
 
 export class Sequence {
-  animation: string = '';
-  frequency: string = '';
-  centerX: string = '';
-  centerY: string = '';
-  travelBlobs: string = '';
-  sameBlob: string = '';
-  childBlob: string = '';
-  direction: string = '';
-  heights: string = '';
-  speeds: string = '';
-  minTravelAngle: string = '';
-  maxTravelAngle: string = '';
-  alignWithTarget: string = '';
-  flipOnAligning: string = '';
-  rotationOffset: string = '';
-  scales: string = '';
-  playMetaballsStart: string = '';
-  playMetaballsEnd: string = '';
-  aboveTarget: string = '';
-  startImpact: string = '';
-  endImpact: string = '';
-  avoidOverlap: string = '';
-  avoidBleed: string = '';
-  tinted: string = '';
-  minStartAngle: string = '';
-  maxStartAngle: string = '';
-  restrictedBeverageIds: string = '';
+  animation: string= '';
+  frequency: string= '';
+  centerX: string= '';
+  centerY: string= '';
+  travelBlobs: string= '';
+  sameBlob: string= '';
+  childBlob: string= '';
+  direction: string= '';
+  heights: string= '';
+  speeds: string= '';
+  minTravelAngle: string= '';
+  maxTravelAngle: string= '';
+  alignWithTarget: string= '';
+  flipOnAligning: string= '';
+  rotationOffset: string= '';
+  scales: string= '';
+  playMetaballsStart: string= '';
+  playMetaballsEnd: string= '';
+  aboveTarget: string= '';
+  startImpact: string= '';
+  endImpact: string= '';
+  avoidOverlap: string= '';
+  avoidBleed: string= '';
+  tinted: string= '';
+  minStartAngle: string= '';
+  maxStartAngle: string= '';
+  restrictedBeverageIds: string= '';
 }
 
 export class Sequences {
@@ -672,82 +572,9 @@ export class HomeData {
 
 export class ApiResult {
   Success = true;
-  Message = '';
+  Message = "";
   Details: string[] = [];
-  Url = '';
+  Url = "";
 }
-
-export enum KEY_CODE {
-  RIGHT_ARROW = 39,
-  LEFT_ARROW = 37,
-  ONE = 49
-}
-
-export class DeviceInfo {
-  static objectId: number;
-
-
-  static unitState: UnitState;
-
-  static initialize() {
-      DeviceInfo.objectId = JsUtil.getObjectId();
-  }
-}
-
-export class UnitState {
-  objectId: number;
-  DeviceId = '';
-  CountryLanguageCode = 'en-us';
-  UnitLocation = 'US';
-  UnitType = '';
-  PrimaryConsumerLanguage = 'en-us';
-  SecondaryConsumerLanguage = 'none';
-  ShowStillWaterButton = true ;
-  ShowSparklingWaterButton = true ;
-  constructor() {
-      this.objectId = JsUtil.getObjectId();
-  }
-}
-export class UnitStateXX {
-    objectId: number;
-    _deviceId = '';
-    _unitLocation = '';
-    _unitType = '';
-
-    constructor() {
-        this.objectId = JsUtil.getObjectId();
-        console.log('ctor.UnitState', this.objectId);
-    }
-
-    get unitLocation() {
-        return this._unitLocation;
-    }
-
-    set unitLocation(newLocation: string) {
-        this._unitLocation = newLocation;
-    }
-
-    get unitType() {
-        return this._unitType;
-    }
-
-    set unitType(unitType: string) {
-        this._unitType = unitType;
-    }
-
-    get deviceId() {
-        return this._deviceId;
-    }
-
-    set deviceId(deviceId: string) {
-        this._deviceId = deviceId;
-    }
-
-  }
-
-
-
-
-
 
 

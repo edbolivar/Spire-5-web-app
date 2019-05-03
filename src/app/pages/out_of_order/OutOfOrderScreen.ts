@@ -7,6 +7,7 @@ import Fween from '../../../transitions/fween/Fween';
 import AppRoutes from '../../display/navigation/AppRoutes';
 
 export default class OutOfOrderScreen extends AbstractScreen {
+
   private _visibility: number;
 
   private _textVerticalMargin = 50;
@@ -36,10 +37,7 @@ export default class OutOfOrderScreen extends AbstractScreen {
     super(appInfo);
 
     this.visibility = 0;
-    if (!outOfOrderEventArgs) {
-      outOfOrderEventArgs = appInfo.ConfigurationData.outOfOrderEventArgs;
-    }
-
+    console.log("outoforder", outOfOrderEventArgs );
     this._outOfOrderItems = outOfOrderEventArgs.Items;
   }
 
@@ -48,7 +46,7 @@ export default class OutOfOrderScreen extends AbstractScreen {
   }
 
   public set visibility(visibility: number) {
-    if (this._visibility !== this.visibility) {
+    if (this._visibility != this.visibility) {
       this._visibility = visibility;
       this.redrawErrorIconVisibility();
       this.redrawBubblesVisibility();
@@ -74,21 +72,25 @@ export default class OutOfOrderScreen extends AbstractScreen {
     this._bubblesSprite.y = this.Platform.height - this._bubblesTexture.baseTexture.height;
   }
 
-  public async prepareToShow() {
-    
-    // Create background elements
-    await this.createBubbles();
-    await this.createErrorIcon();
+  public prepare(): Promise<void> {
+    return new Promise<void>((resolve) => {
 
-    // Create all message text elements
-    await this.createOutOfOrderTitle();
-    await this.createOutOfOrderBody();
+      // Create background elements
+      this.createBubbles();
+      this.createErrorIcon();
 
-    // Create out of order items
-    await this.createOutOfOrderItemsList();
+      // Create all message text elements
+      this.createOutOfOrderTitle();
+      this.createOutOfOrderBody();
 
-    // Initial settings
-    this.visibility = 0;
+      // Create out of order items
+      this.createOutOfOrderItemsList();
+
+      // Initial settings
+      this.visibility = 0;
+
+      resolve();
+    });
   }
 
   public show(previousRoute?: string): Promise<void> {
@@ -159,12 +161,13 @@ export default class OutOfOrderScreen extends AbstractScreen {
 
   private createOutOfOrderItemsList() {
 
-    let top = 0;
-    let maxWidth = 0;
+    var top = 0;
+    var maxWidth = 0;
+    var height = 0;
 
     this._outOfOrderItemsSprite = new Sprite();
 
-    this._outOfOrderItems.forEach((outOfOrderItem) => {
+    this._outOfOrderItems.forEach((outOfOrderItem) =>{
       const outOfOrderItemText = new Text(outOfOrderItem.Description, TextUtils.getStyleBody(16, 0xA9A9A9, 'normal', 'center'));
       outOfOrderItemText.y = top;
       top += outOfOrderItemText.height;
@@ -172,6 +175,8 @@ export default class OutOfOrderScreen extends AbstractScreen {
       if (outOfOrderItemText.width > maxWidth) {
         maxWidth = outOfOrderItemText.width;
       }
+
+      height += outOfOrderItemText.height;
 
       this._outOfOrderItemsText.push(outOfOrderItemText);
       this._outOfOrderItemsSprite.addChild(outOfOrderItemText);
@@ -191,6 +196,11 @@ export default class OutOfOrderScreen extends AbstractScreen {
 
     this._outOfOrderBody.destroy();
     this._outOfOrderTitle.destroy();
+
+    //this._outOfOrderItemsSprite.destroy();
+    //this._outOfOrderItemsText.forEach((outOfOrderItemText) => {
+      //outOfOrderItemText.destroy();
+    //});
 
     super.destroy();
   }

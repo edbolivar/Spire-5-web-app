@@ -1,62 +1,35 @@
-import * as _ from "lodash";
-import { Sprite, Text } from "pixi.js";
-import FlavorListItem from "./FlavorListItem";
-import TextUtils from "../../utils/TextUtils";
-import SimpleSignal from "simplesignal";
-import { AppInfoService } from "../../services/app-info.service";
-import { FlavorDesign, DeviceInfo } from "../../universal/app.types";
-import Easing from "../../../transitions/Easing";
-import { LocalizationService } from "../../services/localization.service";
-
-export type FlavorListArgs = (selectedFlavorIds: string[]) => void;
+import * as _ from 'lodash';
+import Sprite = PIXI.Sprite;
+import Text = PIXI.Text;
+import FlavorListItem from './FlavorListItem';
+import TextUtils from '../../utils/TextUtils';
+import SimpleSignal from 'simplesignal';
+import {AppInfoService} from '../../services/app-info.service';
+import {FlavorDesign, FlavorDesignVisual, PourItem, Home} from '../../universal/app.types';
+import HomeScreen from '../home/HomeScreen';
 
 export default class FlavorList extends Sprite {
+
   private static readonly BLOCK_MAX_FLAVORS = true; // If true, user cannot select more than a given number of flavors; if false, they auto-deselect and select in a queue
 
-  public _flavors: FlavorDesign[] = [];
-  public selectedFlavors: FlavorDesign[] = [];
+  private _flavorIds: string[];
+  private _maxSelectedFlavors: number;
+  private _selectedFlavorIds: string[];
+  selectedFlavors: FlavorDesign[] = [] ;
+  private _title: Text;
+  private _flavorItems: FlavorListItem[];
+
+  private _onChanged = new SimpleSignal<(selectedFlavorIds: string[]) => void>();
 
   private _appInfo: AppInfoService;
-  private _availableHeight: number;
-  private _availableWidth: number;
-  private _flavorIds: string[];
-  private _flavorItems: FlavorListItem[];
-  private _maxSelectedFlavors: number;
-  private _onChanged = new SimpleSignal<FlavorListArgs>();
-  private _preTitle: Text;
-  private _selectedFlavorIds: string[];
-  private _title: Text;
-  private _visibility: number;
+  private _flavors: FlavorDesign[] = [];
 
-  constructor(
-    flavorIds: string[],
-    maxSelectedFlavors: number,
-    appInfo: AppInfoService,
-    availableWidth: number,
-    availableHeight: number
-  ) {
+  constructor(flavorIds: string[], maxSelectedFlavors: number, appInfo: AppInfoService) {
     super();
 
     this._appInfo = appInfo;
-    this._availableHeight = availableHeight;
-    this._availableWidth = availableWidth;
-
+    this._flavors = appInfo.ConfigurationData.pourables.flavors;
     this._flavorIds = flavorIds;
-    
-    const brandConfig = this._appInfo.isAda ? this._appInfo.ConfigurationData.platform.brandConfigAda : this._appInfo.ConfigurationData.platform.brandConfig;
-
-
-    this._flavors = this._flavorIds
-      .map(flavorId =>
-        appInfo.ConfigurationData.pourables.flavors.find(
-          flavorDesign => flavorDesign.id === flavorId
-        )
-      );
-    if (brandConfig.flavorMaxVisibleCount > 0) {
-      this._flavors = this._flavors.filter(flavor => flavor !== undefined);
-      this._flavors = this._flavors.slice(0, brandConfig.flavorMaxVisibleCount);
-    }
-
     this._maxSelectedFlavors = Math.min(maxSelectedFlavors, flavorIds.length);
     this._selectedFlavorIds = [];
   }
@@ -65,157 +38,106 @@ export default class FlavorList extends Sprite {
     return this._onChanged;
   }
 
-  public get visibility() {
-    return this._visibility;
-  }
+  public prepare(): Promise<void> {
+    return new Promise((resolve) => {
 
-  public set visibility(visibility: number) {
-    if (this._visibility !== visibility) {
-      this._visibility = visibility;
-      this.redrawVisibility();
-    }
-  }
-
-  private redrawVisibility() {
-    this.alpha = Easing.quadIn(this.visibility);
-  }
-
-  public async prepare() {
-    const config = this._appInfo.isAda
-      ? this._appInfo.ConfigurationData.platform.brandConfigAda
-      : this._appInfo.ConfigurationData.platform.brandConfig;
-
-    const {
-      flavorColumns,
-      flavorColumnSpacing,
-      flavorItemHeight,
-      flavorIconSize,
-      flavorTitleAreaHeight,
-      flavorTitleFontSize,
-      flavorTitleOffsetX
-    } = config;
-
-    const itemWidth = this._availableWidth / flavorColumns;
-
-    let titleText = LocalizationService.LocalizeString(
-      "brand.flavor.title"
-    ).replace("${flavors}", this._maxSelectedFlavors.toString());
-
-    let preTitle = LocalizationService.LocalizeString(
-      "calories.flavors"
-    ).replace("${calories}", "0");
-
-    if (this._maxSelectedFlavors.valueOf() === 0) {
-      titleText = "";
-      preTitle = "";
-    }
-
-    this._title = new Text(
-      titleText,
-      TextUtils.getStyleBody(flavorTitleFontSize, 0xc3c3cf)
-    );
-    this._title.style.letterSpacing = -2;
-    this._title.style.padding = 10;
-
-    this._preTitle = new Text(
-      preTitle,
-      TextUtils.getStyleBody(flavorTitleFontSize * 0.83, 0xc3c3cf)
-    );
-
-    this._title.x = flavorTitleOffsetX;
-    this._title.y = 0;
-
-    this._preTitle.x = this._title.x;
-    this._preTitle.y = this._title.height;
-
-    if (DeviceInfo.unitState.UnitLocation === "CA") {
-      this._preTitle.visible = false;
-    }
-
-    const listItemPromises: Array<Promise<void>> = [];
-
-    this._flavorItems = [];
-
-    const pourableFlavors = this._flavors.filter(flavor =>
-      this._flavorIds.find(flavorId => flavor && flavor.id === flavorId)
-    );
-
-    pourableFlavors.forEach((flavor, idx) => {
-      const column = idx % flavorColumns;
-      const row = Math.floor(idx / flavorColumns);
-
-      const flavorItem = new FlavorListItem(
-        flavor,
-        this._appInfo,
-        itemWidth,
-        flavorItemHeight,
-        flavorIconSize
-      );
-
-      flavorItem.x = column * (flavorColumnSpacing + itemWidth);
-      flavorItem.y = row * flavorItemHeight + flavorTitleAreaHeight;
-      flavorItem.onChanged.add(this.onItemChanged.bind(this));
-
-      this.addChild(flavorItem);
-
-      this._flavorItems.push(flavorItem);
-      listItemPromises.push(flavorItem.prepare());
-
-      if (this._appInfo.isAda) {
-        this._appInfo.adaNavigationService.appendButton(flavorItem);
+      this._title = new Text(`TRY UP TO ${this._maxSelectedFlavors} FLAVORS`, TextUtils.getStyleBody(42, 0xc3c3cf));
+      this._title.x = FlavorListItem.HEIGHT * 1.4;
+      if(!HomeScreen._isAda) {
+        this._title.y = 0;
+      } else {
+        this._title.y = 100;
       }
+      this.addChild(this._title);
+
+      const listItemPromises: Array<Promise<void>> = [];
+
+      this._flavorItems = [];
+      let px = 0;
+      let py = this._title.y + this._title.height * 1.8;
+
+      // Add by the order of the inventory list
+      if(!HomeScreen._isAda) {
+
+        this._flavors.forEach((flavor) => {
+          const flavorGoodForPourable = _.find(this._flavorIds, function (id) {
+            return flavor.id === id;
+          });
+
+          if (flavorGoodForPourable) {
+            const flavorItem = new FlavorListItem(flavor, this._appInfo);
+            flavorItem.x = px;
+            flavorItem.y = py;
+            flavorItem.onChanged.add(this.onItemChanged.bind(this));
+            this.addChild(flavorItem);
+
+            py += flavorItem.height;
+
+            this._flavorItems.push(flavorItem);
+            listItemPromises.push(flavorItem.prepare());
+          }
+        });
+      } else {
+        this._flavors.forEach((flavor) => {
+          const flavorGoodForPourable = _.find(this._flavorIds, function (id) {
+            return flavor.id === id;
+          });
+
+          if (flavorGoodForPourable) {
+            const flavorItem = new FlavorListItem(flavor, this._appInfo);
+            flavorItem.x = px;
+            flavorItem.y = py;
+            flavorItem.onChanged.add(this.onItemChanged.bind(this));
+            this.addChild(flavorItem);
+            if(px > this._appInfo.ConfigurationData.platform.width)
+            {
+              py += flavorItem.height;
+              px =0;
+            } else {
+              px = px + this._appInfo.ConfigurationData.platform.width/2;
+            }
+            
+            this._flavorItems.push(flavorItem);
+            listItemPromises.push(flavorItem.prepare());
+          }
+        });
+      }
+
+      Promise.all(listItemPromises).then(() => {
+        resolve();
+      });
     });
-
-    await Promise.all(listItemPromises);
-
-    if (this._flavorItems.length === 0) {
-      this._title.visible = false;
-    } else if (this._flavorItems.length === 1) {
-      this._title.text = this._title.text.replace("3", "1");
-    } else if (this._flavorItems.length === 2) {
-      this._title.text = this._title.text.replace("3", "2");
-    }
-
-    this.addChild(this._title);
-
-    if (this._flavorItems.length !== 0) {
-      this.addChild(this._preTitle);
-    }
   }
 
   public destroy() {
     this._title.destroy();
-    this._flavorItems.forEach(flavorItems => {
+    this._flavorItems.forEach((flavorItems) => {
       flavorItems.destroy();
     });
     super.destroy();
   }
 
   private onItemChanged(flavor: FlavorDesign, isSelected: boolean) {
+
     if (isSelected) {
       // Add
-      if (this._selectedFlavorIds.indexOf(flavor.id) === -1) {
+      if (!this._selectedFlavorIds.includes(flavor.id)) {
         this._selectedFlavorIds.push(flavor.id);
       }
 
-      if (this.selectedFlavors.indexOf(flavor) === -1) {
+      if (!this.selectedFlavors.includes(flavor)) {
         this.selectedFlavors.push(flavor);
       }
     } else {
       // Remove
-      this._selectedFlavorIds = this._selectedFlavorIds.filter(
-        id => id !== flavor.id
-      );
-      this.selectedFlavors = this.selectedFlavors.filter(
-        item => item !== flavor
-      );
+      this._selectedFlavorIds = this._selectedFlavorIds.filter((id) => id !== flavor.id);
+      this.selectedFlavors = this.selectedFlavors.filter((item) => item !== flavor);
     }
 
     if (FlavorList.BLOCK_MAX_FLAVORS) {
       // Check whether an item should be disabled or not
-      const canSelectMore =
-        this._selectedFlavorIds.length === this._maxSelectedFlavors;
-      this._flavorItems.forEach(flavorItem => {
+      const canSelectMore = this._selectedFlavorIds.length === this._maxSelectedFlavors;
+      this._flavorItems.forEach((flavorItem) => {
         if (!flavorItem.isSelected) {
           flavorItem.isDisabled = canSelectMore;
         }
@@ -224,15 +146,12 @@ export default class FlavorList extends Sprite {
     } else {
       // Deselect the oldest item selected
       if (this._selectedFlavorIds.length > this._maxSelectedFlavors) {
-        const oldestFlavorId = this._selectedFlavorIds[
-          this._maxSelectedFlavors - 1
-        ];
-        const oldestFlavorItem = this._flavorItems.find(flavorItem => {
+        const oldestFlavorId = this._selectedFlavorIds[this._maxSelectedFlavors - 1];
+        const oldestFlavorItem = this._flavorItems.find((flavorItem) => {
           return flavorItem.flavorId === oldestFlavorId;
         });
-        if (oldestFlavorItem) {
+        if (oldestFlavorItem)
           oldestFlavorItem.isSelected = false;
-        }
       } else {
         this._onChanged.dispatch(this._selectedFlavorIds);
       }

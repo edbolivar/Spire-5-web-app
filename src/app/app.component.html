@@ -1,4 +1,4 @@
-<div class="layout vertical" style="height: 10;width: 10;">
+<div class="layout vertical" style="height: 10;width: 10;" (keydown)="onKeyPress($event)">
     <app-pinpad></app-pinpad>
     <div class="flex" style="padding-left: 0px">
       <router-outlet></router-outlet>

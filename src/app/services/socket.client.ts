@@ -20,7 +20,7 @@ export class SocketClient {
   signalRConnection: SignalRConnection;
   lastSignalRMessage = '';
   lastSignalRTime = 0;
-  isDebug = false ;
+
   constructor( private _signalR: SignalR) {
     this.objectId = JsUtil.getObjectId();
     console.log('ctor.SocketClient', this.objectId);
@@ -29,20 +29,11 @@ export class SocketClient {
   initialize(appInfo: AppInfoService) {
     const self = this;
     this.appInfo = appInfo;
-    this.isDebug = appInfo.config.isSocketDebug;
 
     this.wireUpSocketIo();
     this.wireUpSignalR();
 
     this.subscribeToServerEvents() ;
-
-    // have to get it a moment to get the connection 
-    // established
-    setTimeout(function() {
-      if (self.isDebug) { console.log('====> Sending ConsumerUi Activated'); }
-      PublishEvent.Create('ConsumerUi Activated', this.objectId);
-    }, 5000);
-
   }
 
   wireUpSignalR() {
@@ -51,18 +42,18 @@ export class SocketClient {
     }
 
     const self = this;
-    if (self.isDebug) { console.log('**Attempting to connect to signalR'); }
+    console.log('**Attempting to connect to signalR');
     this._signalR.connect().then(function(res){
-      if (self.isDebug) { console.log('**=> Connected to SignalR'); }
+      console.log('**=> Connected to SignalR');
       self.signalRConnection = <SignalRConnection> res ;
-     // console.log('signalr connection', self.signalRConnection);
+      console.log('signalr connection', self.signalRConnection);
 
       // listen for connection errors
       self.signalRConnection.errors.subscribe((error: any) => {
         self.signalRError(error);
       });
       self.signalRConnection.status.subscribe((status: ConnectionStatus) => {
-        if (self.isDebug) { console.log('===signalr.connection status===', status); }
+        console.log('===signalr.connection status===', status);
       });
 
         // 1.create a listener object
@@ -77,32 +68,25 @@ export class SocketClient {
       onMessageSent$.subscribe((e: PubSubEventArgs) => {
         self.handleMessageFromServerViaSignalR(e);
       });
+ 
 
-    }).catch(function(err) {
+    }).catch(function(err){
       console.log('=>SignalR Connected Failed', err);
     });
   }
 
   signalRError(err: any) {
-    if (err.message.startsWith('Connection started reconnecting')) {
-      return ;
-    }
-
-    if (err.message === 'WebSocket closed.') {
-      return ;
-    }
-
     console.log('=== SignalR Error ===', err);
   }
 
   handleMessageFromServerViaSignalR(e: PubSubEventArgs) {
-    const self = this;
-    if (self.isDebug) { console.log('=>Received from SignalR', e); }
+
+    console.log('=>Received from SignalR', e);
     const incomingMessage = JSON.stringify(e);
     const msgTime = new Date().getTime();
     if (incomingMessage === this.lastSignalRMessage) {
       if (msgTime < (this.lastSignalRTime + 1000)) {
-        if (self.isDebug) { console.log('Duplicate SignalR, Skipping ClientSide PubSub'); }
+        console.log('Duplicate SignalR, Skipping ClientSide PubSub');
         return ;
       }
     }
@@ -125,13 +109,14 @@ export class SocketClient {
 
 
     const self = this ;
-    if (self.isDebug) { console.log('==>Attempting socket.io connection at url:', this.appInfo.config.urls.socket); }
+    console.log('==>Attempting socket.io connection at url:', this.appInfo.config.urls.socket);
     self.socket = sio.connect(this.appInfo.config.urls.socket);
         this.socket.on('ServerToClient', function (data: string) {
           const e: PubSubEventArgs = JSON.parse(data);
           self.handleMessageFromServerViaSocketIO(e);
         });
   }
+
 
   handleMessageFromServerViaSocketIO(e: PubSubEventArgs) {
     // received message from server, simply publish it
@@ -141,16 +126,17 @@ export class SocketClient {
       .Send();
   }
 
+
+
   // called from pubsub as part of publish process
   send(e: PubSubEventArgs): void {
-    const self = this;
-    if (self.isDebug) { console.log('sending event to server', e); }
-   
+    console.log('sending event to server', e);
+    const self = this ;
     const eAsString = JSON.stringify(e);
 
     if (this.socket) {
       try {
-        self.socket.emit('ClientToServer', eAsString);
+        this.socket.emit('ClientToServer', eAsString);
       } catch (err) {
         console.log('Error', err);
       }
@@ -160,13 +146,10 @@ export class SocketClient {
       // invoke a server side method, with parameters
       this.signalRConnection.invoke('ClientToServer', JSON.stringify(e))
         .then((data: string[]) => {
-            // success, signalR send
+          console.log('=> SignalR.send', e);
         }).catch(function (err) {
-          if (err.message.startsWith('Connection started reconnecting')) {
-            console.log('==send error==', 'Connection is Reconnecting');
-            return ;
-          }
-          console.log('SignalR Send Error=>', err, JSON.stringify(e));
+
+          console.log('==send error==', err);
           self.wireUpSignalR();
       });
     } else {
@@ -174,25 +157,26 @@ export class SocketClient {
     }
   }
 
+
   subscribeToServerEvents() {
       const self = this;
 
       SubscribeEvent.Create(PubSubTopic.pingClient, this.objectId)
         .HandleEventWithThisMethod(function(e: PubSubEventArgs) {
-            if (self.isDebug) { console.log('received ping from server, publishing ack'); }
+            // console.log('received ping from server, publishing ack', e);
             PublishEvent.Create(PubSubTopic.pingClientAck, self.objectId)
               .Send();
         }).Done();
 
     SubscribeEvent.Create(PubSubTopic.pingServerAck, this.objectId)
       .HandleEventWithThisMethod(function(e) {
-         if (self.isDebug) { console.log('received pingAck from server'); }
+        // console.log('received pingAck from server');
       }).Done();
 
 
-      setInterval(function() {
+      setInterval(function(){
         const timenow = moment().format('dddd, MMMM Do YYYY, h:mm:ss a');
-        if (self.isDebug) { console.log('sending ping to server', timenow); }
+       // console.log('sending ping to server',timenow);
         PublishEvent.Create(PubSubTopic.pingServer, self.objectId)
           .Send();
       }, 60000);

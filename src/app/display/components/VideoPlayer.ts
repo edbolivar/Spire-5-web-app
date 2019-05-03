@@ -125,8 +125,8 @@ export default class VideoPlayer extends Sprite {
     this.getVideo().removeEventListener('ended', this.onVideoEnded);
     this._onLoaded.removeAll();
     this._onEnded.removeAll();
-    this._videoTexture.destroy(true);
-    this._videoSprite.destroy(true);
+    this._videoTexture.destroy();
+    this._videoSprite.destroy();
     super.destroy();
   }
 
@@ -137,8 +137,8 @@ export default class VideoPlayer extends Sprite {
 
     this._onLoaded.dispatch(this);
 
-    if (this.width === 0) { this.width = this.intrinsicWidth; }
-    if (this.height === 0) { this.height = this.intrinsicHeight; }
+    if (this.width === 0) this.width = this.intrinsicWidth;
+    if (this.height === 0) this.height = this.intrinsicHeight;
 
     // Play or pause
     if (this._isPlaying) {
@@ -158,7 +158,7 @@ export default class VideoPlayer extends Sprite {
   }
 
   private onTextureLoadError(e: any) {
-    console.warn('Error loading video texture:', e);
+    console.error('Error loading video texture:', e);
   }
 
   private onVideoEnded() {
