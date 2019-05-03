@@ -144,18 +144,18 @@ export default class BrandScreen extends AbstractScreen {
         this._flavorList.prepare(),
         this._calorieInfo.prepare()
       ] ;
-    } else {
-      var preparelist = this._beverage.isMix ?
-      [
-        this._flavorMix.prepare(),
-        this._calorieInfo.prepare()
-      ]
-      : 
-      [
-        this._flavorList.prepare(),
-        this._calorieInfo.prepare()
-      ] ;
-    }
+     }// else {
+    //   var preparelist = this._beverage.isMix ?
+    //   [
+    //     this._flavorMix.prepare(),
+    //     this._calorieInfo.prepare()
+    //   ]
+    //   : 
+    //   [
+    //     this._flavorList.prepare(),
+    //     this._calorieInfo.prepare()
+    //   ] ;
+    // }
     return Promise.all(preparelist).then(() => {
       return;
     });
@@ -487,13 +487,13 @@ export default class BrandScreen extends AbstractScreen {
 
   }
 
-  private createNutritionFacts(beverage: PourableDesign, vw: number, vh: number) {
-    const options = this.Platform.layout.container;
-    const dimensions = LayoutUtils.parseLayoutRectangle(options, vw, vh);
+  // private createNutritionFacts(beverage: PourableDesign, vw: number, vh: number) {
+  //   const options = this.Platform.layout.container;
+  //   const dimensions = LayoutUtils.parseLayoutRectangle(options, vw, vh);
 
-    this._calorieInfo = new CalorieInfo(beverage, dimensions);
-    this.addChild(this._calorieInfo);
-  }
+  //   this._calorieInfo = new CalorieInfo(beverage, dimensions);
+  //   this.addChild(this._calorieInfo);
+  // }
 
   private startPour() {
 

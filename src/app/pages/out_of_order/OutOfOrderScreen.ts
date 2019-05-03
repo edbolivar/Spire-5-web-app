@@ -197,11 +197,6 @@ export default class OutOfOrderScreen extends AbstractScreen {
     this._outOfOrderBody.destroy();
     this._outOfOrderTitle.destroy();
 
-    //this._outOfOrderItemsSprite.destroy();
-    //this._outOfOrderItemsText.forEach((outOfOrderItemText) => {
-      //outOfOrderItemText.destroy();
-    //});
-
     super.destroy();
   }
 }
