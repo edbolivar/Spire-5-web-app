@@ -1,16 +1,12 @@
-import {Graphics, Point} from 'pixi.js';
+import {Graphics, PointLike} from 'pixi.js';
 
 export default class Box extends Graphics {
 
   private _color: number;
-  private _scale: Point;
 
   constructor(color: number = 0xff00ff, width: number = 100, height: number = 100) {
     super();
 
-    this.cacheAsBitmap = true;
-
-    this._scale = new Point(1, 1);
     this._color = (color >>> 0) & 0xffffff;
 
     this.redrawRectangle();
@@ -27,8 +23,16 @@ export default class Box extends Graphics {
     this.redrawRectangle();
   }
 
+  public get actualScale() {
+    return this.toGlobal({ x: 1, y: 0 } as PointLike).x - this.toGlobal({ x: 0, y: 0 } as PointLike).x;
+  }
+
+  public get actualWidth() {
+    return this.actualScale * 100;
+  }
+
   public get width() {
-    return this._scale.x * 100;
+    return this.scale.x * 100;
   }
 
   public set width(width: number) {
@@ -36,7 +40,7 @@ export default class Box extends Graphics {
   }
 
   public get height() {
-    return this._scale.y * 100;
+    return this.scale.y * 100;
   }
 
   public set height(height: number) {
@@ -47,16 +51,10 @@ export default class Box extends Graphics {
     super.destroy();
   }
 
-  private redrawRectangle() {
+  public redrawRectangle() {
     this.clear();
     this.beginFill(this._color);
     this.drawRect(0, 0, 100, 100);
     this.endFill();
-
-    this.redrawScale();
-  }
-
-  private redrawScale() {
-    this.scale = this._scale;
   }
 }

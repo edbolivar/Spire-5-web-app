@@ -1,11 +1,9 @@
-import {Sprite} from 'pixi.js';
-
+import { Sprite } from 'pixi.js';
 import Navigator from './Navigator';
-import {AppInfoService} from '../../services/app-info.service';
-import {IdleState, Platform} from '../../universal/app.types';
+import { AppInfoService } from '../../services/app-info.service';
+import { IdleState, Platform } from '../../universal/app.types';
 
 export default class AbstractScreen extends Sprite {
-
   private _navigator: Navigator;
   public appInfo: AppInfoService;
   public Platform: Platform;
@@ -26,11 +24,19 @@ export default class AbstractScreen extends Sprite {
     this._navigator = navigator;
   }
 
-  public prepare(): Promise<void> {
+  public prepareToShow(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  public prepareToHide(): Promise<void> {
     return Promise.resolve();
   }
 
   public show(previousRoute?: string): Promise<void> {
+    return Promise.resolve();
+  }
+
+  public transition(transitionInfluence: number) {
     return Promise.resolve();
   }
 
@@ -42,4 +48,3 @@ export default class AbstractScreen extends Sprite {
     super.destroy();
   }
 }
-

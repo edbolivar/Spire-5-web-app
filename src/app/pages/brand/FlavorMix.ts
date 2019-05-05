@@ -1,14 +1,9 @@
 import * as _ from 'lodash';
 import Sprite = PIXI.Sprite;
-import Text = PIXI.Text;
-import FlavorListItem from './FlavorListItem';
-import TextUtils from '../../utils/TextUtils';
-import Config from '../../data/Config';
-import LegacyAnimatedSprite from '../../display/components/LegacyAnimatedSprite';
+import AnimatedSpriteController from '../../display/components/AnimatedSpriteController';
 import SimpleSignal from 'simplesignal';
 import {AppInfoService} from '../../services/app-info.service';
-import {FlavorDesign, FlavorDesignVisual, PourItem, PourableDesign} from '../../universal/app.types';
-import LayoutUtils from '../../utils/LayoutUtils';
+import {FlavorDesign, PourableDesign} from '../../universal/app.types';
 
 export default class FlavorMix extends Sprite {
 
@@ -63,23 +58,23 @@ export default class FlavorMix extends Sprite {
       const listItemPromises: Array<Promise<void>> = [];
 
       this._flavorMixs = [];
-      var px = 200;
+      let px = 200;
       const py = 150;
-      var noBrandId:Boolean = true;
-      var brandId =  this._beverage.pourItem.brandId;
-      this._appInfo.ConfigurationData.pourables.brands.map((brand: PourableDesign)=>{
+      let noBrandId: boolean = true;
+      const brandId =  this._beverage.pourItem.brandId;
+      this._appInfo.ConfigurationData.pourables.brands.map((brand: PourableDesign) => {
         console.log('looking', brand.id);
-        if(brand.id === brandId) {
+        if (brand.id === brandId) {
           this._logo = Sprite.fromImage(brand.design.assets.logoBrand);
           noBrandId = false;
         }
       });
 
-      if(noBrandId === true) {
-        this._logo = Sprite.fromImage("");
+      if (noBrandId === true) {
+        this._logo = Sprite.fromImage('');
       }
       
-      this._beverage.design.assets.bfConnector = "./assets/attractor/b_f_connector.png";
+      this._beverage.design.assets.bfConnector = './assets/attractor/b_f_connector.png';
       this._logo.x = px;
       this._logo.y = py;
       this._logo.position.set(this._logo.x - this._logo.width * 0.5, this._logo.y - FlavorMix.HEIGHT * 0.5);
@@ -94,7 +89,7 @@ export default class FlavorMix extends Sprite {
 
         if (flavorGoodForPourable) {
 
-          var bfconn = Sprite.fromImage(this._beverage.design.assets.bfConnector);
+          const bfconn = Sprite.fromImage(this._beverage.design.assets.bfConnector);
           bfconn.x = px;
           bfconn.y = py + 50;
           bfconn.position.set(bfconn.x - FlavorMix.HEIGHT * 0.5, bfconn.y - FlavorMix.HEIGHT * 0.5);
@@ -104,11 +99,20 @@ export default class FlavorMix extends Sprite {
 
           this._flavorMixs.push(bfconn);
 
-          var flavorItem = new LegacyAnimatedSprite(flavor.select.asset, flavor.select.width, flavor.select.height, flavor.select.frames, flavor.select.fps, flavor.select.scale);
+          const flavorItem = new AnimatedSpriteController({
+            id: flavor.id,
+            image: flavor.select.asset,
+            frameWidth: flavor.select.width,
+            frameHeight: flavor.select.height,
+            fps: flavor.select.fps,
+            frames: flavor.select.frames,
+            scale: flavor.select.scale,
+            autoPlay: false
+          });
           flavorItem.loop = false;
-          flavorItem.x = px;
-          flavorItem.y = py + 50;
-          this.addChild(flavorItem);
+          flavorItem.originalX = px;
+          flavorItem.originalY = py + 50;
+          flavorItem.parent = this;
 
           px += FlavorMix.HEIGHT;
           this._flavorMixs.push(flavorItem);

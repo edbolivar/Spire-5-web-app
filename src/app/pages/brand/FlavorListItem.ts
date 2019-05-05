@@ -1,6 +1,6 @@
 import Sprite = PIXI.Sprite;
 import Box from '../../display/shapes/Box';
-import LegacyAnimatedSprite from '../../display/components/LegacyAnimatedSprite';
+import AnimatedSpriteController from '../../display/components/AnimatedSpriteController';
 import Pill from '../../display/shapes/Pill';
 import Fween from '../../../transitions/fween/Fween';
 import Easing from '../../../transitions/Easing';
@@ -12,7 +12,9 @@ import SimpleSignal from 'simplesignal';
 import {Text} from 'pixi.js';
 import {AppInfoService} from '../../services/app-info.service';
 import {FlavorDesign} from '../../universal/app.types';
-import HomeScreen from '../home/HomeScreen';
+import {LocalizationService} from '../../services/localization.service';
+import PillRing from '../../display/shapes/PillRing';
+
 
 export default class FlavorListItem extends Sprite {
 
@@ -33,12 +35,14 @@ export default class FlavorListItem extends Sprite {
 
   private _label: Text;
   private _boundingBox: Box;
-  private _animation: LegacyAnimatedSprite;
+  private _animation: AnimatedSpriteController;
   private _background: Pill;
+  private _isFocused: boolean = false;
 
   private _appInfo: AppInfoService;
   private  _flavors: FlavorDesign[] = [];
   private _flavor: FlavorDesign;
+  private _adaStroke: PillRing;
 
   constructor(flavor: FlavorDesign, appInfo: AppInfoService) {
     super();
@@ -73,6 +77,7 @@ export default class FlavorListItem extends Sprite {
   public get height() {
     return this.__height;
   }
+
   public set height(height: number) {
   }
 
@@ -149,24 +154,30 @@ export default class FlavorListItem extends Sprite {
       this._background.y = Math.round(this.__height / 2 - this._background.height / 2);
       this.addChild(this._background);
 
-      if(!HomeScreen._isAda) { 
-        this._label = new Text(this._flavor.name.toUpperCase(), TextUtils.getStyleBody(76, 0xffffff));
-      } else {
-        this._label = new Text(this._flavor.name.toUpperCase(), TextUtils.getStyleBody(50, 0xffffff));
-      }
+      this._label = new Text(LocalizationService.LocalizeString(this._flavor.id), TextUtils.getStyleBody(76, 0xffffff));
       this._label.anchor.set(0, 0.5);
       this._label.x = this.__height * 1.4;
       this._label.y = this.__height * 0.5;
-      console.log(this._label.width);
       this.addChild(this._label);
 
-      this._animation = new LegacyAnimatedSprite(this._flavor.select.asset, this._flavor.select.width, this._flavor.select.height, this._flavor.select.frames, this._flavor.select.fps, this._flavor.select.scale);
+      this._animation = new AnimatedSpriteController({
+        id: this._flavor.id,
+        image: this._flavor.select.asset, 
+        frameWidth: this._flavor.select.width, 
+        frameHeight: this._flavor.select.height, 
+        frames: this._flavor.select.frames, 
+        fps: this._flavor.select.fps, 
+        scale: this._flavor.select.scale,
+        autoPlay: false
+      });
       this._animation.loop = false;
-      this._animation.x = this.__height * 0.75;
-      this._animation.y = this.__height * 0.5;
-      this.addChild(this._animation);
+      this._animation.originalX = this.__height * 0.75;
+      this._animation.originalY = this.__height * 0.5;
+      this._animation.parent = this;
 
       this.__width = this._label.x + this._label.width + this.__height * 0.5;
+
+      this.addAdaStrokeBorder();
 
       this.redrawSelectedPhase();
       this.redrawDisabledPhase();
@@ -182,11 +193,31 @@ export default class FlavorListItem extends Sprite {
     this._animation.destroy();
     this._background.destroy();
     this._onChanged.removeAll();
+    this._adaStroke.destroy();
+
     super.destroy();
   }
 
   private toggleSelected() {
     this.isSelected = !this.isSelected;
+  }
+  get isFocused() {
+    return this._isFocused;
+  }
+
+  set isFocused(value: boolean) {
+    this._isFocused = value ;
+    this._adaStroke.visible = value ;
+  }
+  private addAdaStrokeBorder() {
+    const padding = 30;
+    this._adaStroke = new PillRing(0x39c9bb, 0, Math.round(this.__height - padding), 5);
+    this._adaStroke.x = Math.round(this.__width / 2 - Math.round(this.__width - padding) / 2);
+    this._adaStroke.y = Math.round(this.__height / 2 - this._adaStroke.height / 2);
+    this._adaStroke.alpha = 1;
+    this._adaStroke.visible = false;
+    this._adaStroke.width = Math.round(this.__width - padding);
+    this.addChild(this._adaStroke);    
   }
 
   private redrawSelectedPhase() {

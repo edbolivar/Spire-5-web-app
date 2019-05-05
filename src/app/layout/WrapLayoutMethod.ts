@@ -10,9 +10,6 @@ export class WrapLayoutMethod implements ILayoutMethod {
     spaceBetween = 10;
     growItemsToFit = false ;
 
-    _intrinsicWidth: number = 100;
-    _intrinsicHeight: number = 100;
-
     constructor() {
         this.objectId = JsUtil.getObjectId();
     }
@@ -57,19 +54,10 @@ export class WrapLayoutMethod implements ILayoutMethod {
         });
     }
 
-    get intrinsicWidth(): number {
-        return this._intrinsicWidth;
-    }
-
-    get intrinsicHeight(): number {
-        return this._intrinsicHeight;
-    }
    
 }
 
 export interface ILayoutMethod {
-    intrinsicWidth: number;
-    intrinsicHeight: number;
     calculate(layoutContainer: LayoutContainer);
 }
 

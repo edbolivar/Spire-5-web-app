@@ -5,10 +5,10 @@ export const environment = {
   serverPort: 4000,
   siteIconPath:  'assets/icons/spireplus.logo.png',
   urls: {
-    socket: 'http://spire.oldprogrammer.io:4001',
+    socket: 'http://spire.oldprogrammer.io:4002',
     visuals: 'http://spire.oldprogrammer.io/api/config/pocvisuals',
     serviceUI: 'http://spire.oldprogrammer.io/api/config/serviceui',
-    platform: 'http://spire.oldprogrammer.io/api/config/design/platform2',
+    platform: 'http://spire.oldprogrammer.io/api/config/design/platform',
     flavors: 'http://spire.oldprogrammer.io/api/config/design/flavors',
     pouritems: 'http://spire.oldprogrammer.io/api/config/pouritems',
     idlestate: 'http://spire.oldprogrammer.io/api/config/idlestate',
@@ -17,12 +17,8 @@ export const environment = {
     validatepin: 'http://spire.oldprogrammer.io/api/config/validatepin',
     pourables: 'http://spire.oldprogrammer.io/api/config/pourables',
     localization: 'http://spire.oldprogrammer.io/api/config/localization',
-    home: 'http://spire.oldprogrammer.io/api/config/design/home',
-    overrides: 'http://spire.oldprogrammer.io/api/config/overrides',
-    unitstate: 'http://spire.oldprogrammer.io/api/config/unitstate'
+    home: 'http://spire.oldprogrammer.io/api/config/design/home'
   },
-  isSocketDebug: false, 
-  isConfigServiceDebug: false,
   serverHost: 'altspire',
   isBlocker: true
 };

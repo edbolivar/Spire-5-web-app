@@ -26,14 +26,19 @@ export default class BlobButton extends Sprite {
   private _onTapped = new SimpleSignal<(instance: BlobButton) => void>();
   private objectId: number;
 
-  constructor(preTitleResourceId: string | undefined, titleResourceId: string | undefined, radius: number, accentColor: number, backgroundColor: number, iconAsset: string | undefined, iconScale: number = 1, iconColor: number = 0xffffff, moveIcon: boolean = true) {
+  private _adaStrokeBorder: BlobShape;
+  private _adaStrokeFill: BlobShape;
+
+  private _isFocused: boolean = false;
+
+  constructor(preTitleResourceId: string | undefined, titleResourceId: string | undefined, radius: number, accentColor: number, backgroundColor: number, iconAsset?: string, iconScale: number = 1, iconColor: number = 0xffffff, moveIcon: boolean = true) {
     super();
     this.objectId = JsUtil.getObjectId();
 
     // Bindings
     this.onTick = this.onTick.bind(this);
 
-    // Properties
+    // Properties 
     this._radius = radius;
     this._moveIconOnPress = moveIcon;
     this._pressedPhase = 0;
@@ -83,6 +88,8 @@ export default class BlobButton extends Sprite {
       this._container.addChild(this._icon);
     }
 
+    this.addSelectionBorder();
+
     // End
     this.redraw();
 
@@ -98,6 +105,16 @@ export default class BlobButton extends Sprite {
     if (title && this._title) {
       this._title.text = title;
     }
+  }
+
+  get isFocused() {
+    return this._isFocused;
+  }
+
+  set isFocused(value: boolean) {
+    this._isFocused = value ;
+    this._adaStrokeBorder.visible = value ;
+    this._adaStrokeFill.visible = value ;
   }
 
   public get onTapped() {
@@ -167,16 +184,16 @@ export default class BlobButton extends Sprite {
     this._strokeFront.rotation -= this._rotationSpeed * delta;
   }
 
-  private onClicked() {
+  public onClicked() {
     this._onTapped.dispatch(this);
   }
 
-  private onPointerDown() {
+  public onPointerDown() {
     this._onPressed.dispatch(this);
     Fween.use(this).to({pressedPhase: 1}, 0.2, Easing.quadOut).play();
   }
 
-  private onPointerUp() {
+  public onPointerUp() {
     this._onReleased.dispatch(this);
     Fween.use(this).to({pressedPhase: 0}, 0.3, Easing.backOutWith(2)).play();
   }
@@ -185,6 +202,29 @@ export default class BlobButton extends Sprite {
     this.redrawScale();
   }
 
+  private addSelectionBorder() {
+    this._adaStrokeBorder = new BlobShape(
+        this._radius - 25,
+        0x00000000,
+        0xff000000,
+        12,
+        0
+      );
+      this._adaStrokeBorder.visible = false ;
+      this._container.addChild(this._adaStrokeBorder);
+      
+      const adaColor = JsUtil.toColorNumber('#39c9bb');
+
+      this._adaStrokeFill = new BlobShape(
+        this._radius - 28.1,
+        0x00000000,
+        (0xff000000 | adaColor) >>> 0,
+        6,
+        0
+      );
+      this._adaStrokeFill.visible = false ;
+      this._container.addChild(this._adaStrokeFill);
+  }
   private redrawScale() {
     const scale = map(this._pressedPhase, 0, 1, 1, 0.9);
     this.scale.set(scale, scale);

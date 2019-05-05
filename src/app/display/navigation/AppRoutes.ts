@@ -26,19 +26,15 @@ export default class AppRoutes {
     });
     const self = this;
     router.addTemplate(AppRoutes.getBrand(), (params: any) => {
-      var foundPourable = _.find(self._appInfo.ConfigurationData.pourables.brands,
-        function(item) {
-          return params.brandId === item.id;
-        });
+      let foundPourable = _.find(self._appInfo.ConfigurationData.pourables.brands,
+        item => params.brandId === item.id);
 
       if (foundPourable) {
         return new BrandScreen(foundPourable, this._appInfo);
       }
 
       foundPourable = _.find(self._appInfo.ConfigurationData.pourables.curatedMixes,
-        function(item) {
-          return params.brandId === item.id;
-        });
+        item => params.brandId === item.id);
 
       if (foundPourable) {
         return new BrandScreen(foundPourable, this._appInfo);

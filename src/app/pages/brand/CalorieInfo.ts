@@ -1,100 +1,103 @@
-import {Sprite, Text} from 'pixi.js';
-import {LayoutRectangle} from '../../utils/LayoutUtils';
+import { Sprite, Text } from 'pixi.js';
+import { LayoutRectangle } from '../../utils/LayoutUtils';
 import TextUtils from '../../utils/TextUtils';
-import {CalorieCup, PourableDesign} from '../../universal/app.types';
-import * as _ from 'lodash';
-import { updateJsxSelfClosingElement } from 'typescript';
+import { PourableDesign } from '../../universal/app.types';
 import CalorieInfoItem from './CalorieInfoItem';
-import {LocalizationService} from '../../services/localization.service';
+import { LocalizationService } from '../../services/localization.service';
 
 export default class CalorieInfo extends Sprite {
+  private _beverageName: string;
+  private _title: Text;
+  private _calorieInfoItems: CalorieInfoItem[];
+  private _layoutRectangle: LayoutRectangle;
+  private __width: number;
+  private __height: number;
 
-    private _beverageId: string;
-    private _beverageName: string
-    private _title: Text;
-    private _calorieInfoItems: CalorieInfoItem[];
-    private _layoutRectangle: LayoutRectangle;
-    private __width: number;
-    private __height: number;
+  constructor(
+    private _beverage: PourableDesign,
+    layoutRectangle: LayoutRectangle
+  ) {
+    super();
 
-    constructor(private _beverage: PourableDesign, layoutRectangle: LayoutRectangle) {
-        super();
+    this._beverageName = this._beverage.name;
+    this._layoutRectangle = layoutRectangle;
+    this.__width = 0;
+    this.__height = 0;
+  }
 
-        this._beverageId = this._beverage.id;
-        this._beverageName = this._beverage.name;
-        this._layoutRectangle = layoutRectangle;
-        this.__width = 0;
-        this.__height = 0;
-    }
+  public prepare(): Promise<void> {
+    return new Promise(resolve => {
+      const countryCode =
+        LocalizationService.instance.localizationModel.primaryLocalization
+          .CountryLanguageCode;
 
-    public prepare(): Promise<void>{
-        const self = this ;
-        return new Promise((resolve) =>{
+      if (countryCode !== 'en-us') {
+        this._title = new Text(
+          this._beverageName,
+          TextUtils.getStyleBody(24, 0xffffff, 'bold', 'right')
+        );
+      } else {
+        this._title = new Text(
+          '',
+          TextUtils.getStyleBody(24, 0xffffff, 'bold', 'right')
+        );
+      }
 
-            const countryCode = LocalizationService.instance.localizationModel.primaryLocalization.CountryLanguageCode;
+      this.__width = this._title.width;
+      this.__height = this._title.height;
 
-            if (countryCode !== 'en-us') {
-              this._title = new Text(this._beverageName, TextUtils.getStyleBody(24, 0xffffff, "bold", "right"));
-            } else {
-              this._title = new Text('', TextUtils.getStyleBody(24, 0xffffff, "bold", "right"));
-            }
+      const listItemPromises: Array<Promise<void>> = [];
+      this._calorieInfoItems = [];
 
+      this.y = this._layoutRectangle.bottom - 200;
 
+      const px = 0;
+      const titlePy = this._title.y + this._title.height;
+      let py = titlePy;
 
-            this.__width = this._title.width;
-            this.__height = this._title.height;
+      if (this._beverage.CalorieCups.length > 0) {
+        this.addChild(this._title);
+      }
 
-            const listItemPromises: Array<Promise<void>> = [];
-            this._calorieInfoItems = [];
+      this._beverage.CalorieCups.forEach((cup) => {
+        const calorieInfoItem = new CalorieInfoItem(cup);
+        calorieInfoItem.x = px;
+        calorieInfoItem.y = py + titlePy;
 
-            this.y = this._layoutRectangle.bottom - 200;
+        this.addChild(calorieInfoItem);
 
-            let px = 0;
-            let titlePy = this._title.y + this._title.height;
-            let py = titlePy;
+        py += titlePy * 3;
 
-           if (this._beverage.CalorieCups.length > 0) {
-              this.addChild(this._title);
-           }
+        this._calorieInfoItems.push(calorieInfoItem);
+        listItemPromises.push(calorieInfoItem.prepare());
 
-            _.forEach(this._beverage.CalorieCups, function(cup) {
-                const calorieInfoItem = new CalorieInfoItem(cup);
-                calorieInfoItem.x = px;
-                calorieInfoItem.y = py + titlePy ;
+        if (this.__width < calorieInfoItem.width) {
+          this.__width = calorieInfoItem.width;
+        }
+      });
 
-                self.addChild(calorieInfoItem);
+      this.__height = py;
 
-                py += (titlePy * 3);
+      this.x = this._layoutRectangle.right - this.__width - 25;
+      this.y = this._layoutRectangle.bottom - this.__height - 50;
 
-                self._calorieInfoItems.push(calorieInfoItem);
-                listItemPromises.push(calorieInfoItem.prepare());
+      this._title.x = this.__width - this._title.width;
 
-                if(self.__width < calorieInfoItem.width)
-                    self.__width = calorieInfoItem.width;
-            });
+      this._calorieInfoItems.forEach(nutritionFactItem => {
+        nutritionFactItem.x = this.__width - nutritionFactItem.width;
+      });
 
-            this.__height = py;
+      Promise.all(listItemPromises).then(() => {
+        resolve();
+      });
+    });
+  }
 
-            this.x = this._layoutRectangle.right - this.__width - 25;
-            this.y = this._layoutRectangle.bottom - this.__height - 50;
-
-            this._title.x = this.__width - this._title.width;
-
-            this._calorieInfoItems.forEach((nutritionFactItem) => {
-               nutritionFactItem.x = this.__width - nutritionFactItem.width;
-            });
-
-            Promise.all(listItemPromises).then(() => {
-                resolve();
-            });
-        });
-    }
-
-    public destroy() {
-        this._title.destroy();
-        this._calorieInfoItems.forEach((nutritionFact) => {
-            nutritionFact.destroy();
-        });
-        super.destroy();
-    }
+  public destroy() {
+    this._title.destroy();
+    this._calorieInfoItems.forEach(nutritionFact => {
+      nutritionFact.destroy();
+    });
+    super.destroy();
+  }
 }

@@ -8,7 +8,7 @@ export const environment = {
     socket: 'http://localhost:4002',
     visuals: 'http://localhost:4000/api/config/pocvisuals',
     serviceUI: 'http://localhost:4000/api/config/serviceui',
-    platform: 'http://localhost:4000/api/config/design/platform2',
+    platform: 'http://localhost:4000/api/config/design/platform',
     flavors: 'http://localhost:4000/api/config/design/flavors',
     pouritems: 'http://localhost:4000/api/config/pouritems',
     idlestate: 'http://localhost:4000/api/config/idlestate',
@@ -17,11 +17,7 @@ export const environment = {
     validatepin: 'http://localhost:4000/api/config/validatepin',
     pourables: 'http://localhost:4000/api/config/pourables',
     localization: 'http://localhost:4000/api/config/localization',
-    home: 'http://localhost:4000/api/config/design/home',
-    overrides: 'http://localhost:4000/api/config/overrides',
-    unitstate: 'http://localhost:4000/api/config/unitstate'
+    home: 'http://localhost:4000/api/config/design/home'
   },
-  isSocketDebug: false, 
-  isConfigServiceDebug: false,
   serverHost: 'spireplus'
 };

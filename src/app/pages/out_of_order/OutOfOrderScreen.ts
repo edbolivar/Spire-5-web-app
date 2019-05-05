@@ -37,7 +37,7 @@ export default class OutOfOrderScreen extends AbstractScreen {
     super(appInfo);
 
     this.visibility = 0;
-    console.log("outoforder", outOfOrderEventArgs );
+    console.log('outoforder', outOfOrderEventArgs );
     this._outOfOrderItems = outOfOrderEventArgs.Items;
   }
 
@@ -46,7 +46,7 @@ export default class OutOfOrderScreen extends AbstractScreen {
   }
 
   public set visibility(visibility: number) {
-    if (this._visibility != this.visibility) {
+    if (this._visibility !== this.visibility) {
       this._visibility = visibility;
       this.redrawErrorIconVisibility();
       this.redrawBubblesVisibility();
@@ -161,13 +161,12 @@ export default class OutOfOrderScreen extends AbstractScreen {
 
   private createOutOfOrderItemsList() {
 
-    var top = 0;
-    var maxWidth = 0;
-    var height = 0;
+    let top = 0;
+    let maxWidth = 0;
 
     this._outOfOrderItemsSprite = new Sprite();
 
-    this._outOfOrderItems.forEach((outOfOrderItem) =>{
+    this._outOfOrderItems.forEach((outOfOrderItem) => {
       const outOfOrderItemText = new Text(outOfOrderItem.Description, TextUtils.getStyleBody(16, 0xA9A9A9, 'normal', 'center'));
       outOfOrderItemText.y = top;
       top += outOfOrderItemText.height;
@@ -175,8 +174,6 @@ export default class OutOfOrderScreen extends AbstractScreen {
       if (outOfOrderItemText.width > maxWidth) {
         maxWidth = outOfOrderItemText.width;
       }
-
-      height += outOfOrderItemText.height;
 
       this._outOfOrderItemsText.push(outOfOrderItemText);
       this._outOfOrderItemsSprite.addChild(outOfOrderItemText);

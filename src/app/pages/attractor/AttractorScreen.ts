@@ -3,45 +3,41 @@ import VideoPlayer from '../../display/components/VideoPlayer';
 import Box from '../../display/shapes/Box';
 import LayoutUtils from '../../utils/LayoutUtils';
 import AppRoutes from '../../display/navigation/AppRoutes';
-import Fween from '../../../transitions/fween/Fween';
-import {AppInfoService} from '../../services/app-info.service';
-import {IdleState, ConfigurationData} from '../../universal/app.types';
+import { AppInfoService } from '../../services/app-info.service';
+import { IdleState } from '../../universal/app.types';
 import { JsUtil } from '../../universal/JsUtil';
 import { SubscribeEvent, PubSubTopic } from '../../universal/pub-sub-types';
-import { textSpanContainsPosition } from 'typescript';
+import Easing from '../../../transitions/Easing';
+import { map } from 'moremath';
+import { IdleToHomeTransition } from '../../display/navigation/IdleToHomeTransition';
 
 export default class AttractorScreen extends AbstractScreen {
-
   private _videos: VideoPlayer[];
   private _cover: Box;
   private _currentVideo: number;
 
-  private _fadeOutWhenHiding: boolean;
   private _isDismissing: boolean;
   private _idleState: IdleState;
-  objectId: number ;
+  objectId: number;
 
   constructor(appInfo: AppInfoService) {
     super(appInfo);
     this.objectId = JsUtil.getObjectId();
     this._videos = [];
     this.visible = false;
-    const self = this;
 
     SubscribeEvent.Create(PubSubTopic.idleStateChanged, this.objectId)
-    .HandleEventWithThisMethod((e) => self.onIdleStateChanged(e.data))
-    .Done();
-      
+      .HandleEventWithThisMethod(e => this.onIdleStateChanged(e.data))
+      .Done();
   }
 
   onIdleStateChanged(e: IdleState) {
-    console.log("AttractorScreen got idlestate", e);
+    console.log('AttractorScreen got idlestate', e);
     this._idleState = e;
- } 
+  }
 
-
-  public prepare(): Promise<void> {
-    return new Promise((resolve, reject) => {
+  public prepareToShow(): Promise<void> {
+    return new Promise(resolve => {
       // Add cover
       this._cover = new Box();
       this._cover.alpha = 0;
@@ -53,6 +49,9 @@ export default class AttractorScreen extends AbstractScreen {
         this.dismiss(true);
       });
       this.addChild(this._cover);
+
+      this.alpha = 0;
+      this.visible = true;
 
       for (const resourceItem of this._idleState.videos) {
         const video = new VideoPlayer(resourceItem.url);
@@ -72,31 +71,25 @@ export default class AttractorScreen extends AbstractScreen {
     });
   }
 
-  public show(previousRoute?: string): Promise<void> {
-    this.visible = true;
+  public async show(previousRoute?: string) {
     this.playVideo(0);
-    return Promise.resolve();
-
   }
 
-  public hide(nextRoute?: string): Promise<void> {
-    // TODO: must only fade out if interrupted; if not, can just display directly
-    return new Promise((resolve) => {
-      if (this._fadeOutWhenHiding) {
-        Fween
-          .use(this)
-          .to({alpha: 0}, 1)
-          .call(resolve).play();
-      } else {
-        resolve();
-      }
-    });
+  public async transition(transitionInfluence: number) {
+    if (this.navigator.transition.type === 'Idle') {
+      this.alpha = Easing.quadOut(map(transitionInfluence, 0, 0.3, 0, 1, true));
+      return;
+    }
+
+    if (this.navigator.transition.type === 'IdleToHome') {
+      this.alpha = 0;
+    }
   }
 
   public destroy() {
     SubscribeEvent.UnSubscribeByConsumer(this.objectId);
 
-    this._videos.forEach((video, index) => {
+    this._videos.forEach(video => {
       video.destroy();
     });
     this._videos = [];
@@ -109,7 +102,7 @@ export default class AttractorScreen extends AbstractScreen {
     if (videoIndex === this._currentVideo) {
       if (videoIndex === this._videos.length - 1) {
         // Finished last video
-       // if (Config.get().attractor.loop) {
+        // if (Config.get().attractor.loop) {
         if (this._idleState.loop) {
           // Should loop
           this.playVideo(0);
@@ -125,7 +118,7 @@ export default class AttractorScreen extends AbstractScreen {
   }
 
   private areAllVideosLoaded() {
-    return this._videos.every((video) => video.isLoaded);
+    return this._videos.every(video => video.isLoaded);
   }
 
   private resizeAllVideos() {
@@ -134,15 +127,19 @@ export default class AttractorScreen extends AbstractScreen {
       x: 0,
       y: 0,
       width: this.Platform.width,
-      height: this.Platform.height,
+      height: this.Platform.height
     };
 
     for (const video of this._videos) {
       const videoSize = {
         width: video.intrinsicWidth,
-        height: video.intrinsicHeight,
+        height: video.intrinsicHeight
       };
-      const videoRect = LayoutUtils.fitInsideRectangle(videoSize, viewport, true);
+      const videoRect = LayoutUtils.fitInsideRectangle(
+        videoSize,
+        viewport,
+        true
+      );
       video.x = videoRect.x;
       video.y = videoRect.y;
       video.width = videoRect.width;
@@ -168,8 +165,11 @@ export default class AttractorScreen extends AbstractScreen {
   private dismiss(fadeOut: boolean) {
     if (!this._isDismissing) {
       this._isDismissing = true;
-      this._fadeOutWhenHiding = fadeOut;
-      this.navigator.goTo(AppRoutes.getHome());
+      this.navigator.goTo(
+        AppRoutes.getHome(),
+        null,
+        new IdleToHomeTransition()
+      );
     }
   }
 }

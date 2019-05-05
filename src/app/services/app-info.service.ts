@@ -10,6 +10,7 @@ import {environment} from '../../environments/environment';
 import {JsUtil} from '../universal/JsUtil';
 import {ConfigurationData} from '../universal/app.types';
 import {LocalizationService} from './localization.service';
+import { AdaNavigationService } from './ada-navigation.service';
 
 
 @Injectable()
@@ -28,6 +29,8 @@ export class AppInfoService {
   hasBlocked = false;
   incomingEnvironment: any = environment ;
   localizationService: LocalizationService ;
+  numberOfBrands: number ;
+  isAda = false;
 
   screenMetrics: ScreenMetrics =
     {
@@ -46,10 +49,12 @@ export class AppInfoService {
       'keypadHeight' : '75px'
 
     };
+  adaNavigationService: AdaNavigationService;
 
   constructor(public pubsub: PubSubService,
               private router: Router,
-              private injector: Injector) {
+              private injector: Injector
+            ) {
     this.objectId = JsUtil.getObjectId();
     console.log('ctor.appInfo', this.objectId);
 

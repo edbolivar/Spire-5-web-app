@@ -20,20 +20,27 @@ export class SocketClient {
   signalRConnection: SignalRConnection;
   lastSignalRMessage = '';
   lastSignalRTime = 0;
-
+  isDebug = false ;
   constructor( private _signalR: SignalR) {
     this.objectId = JsUtil.getObjectId();
     console.log('ctor.SocketClient', this.objectId);
   }
 
   initialize(appInfo: AppInfoService) {
-    const self = this;
     this.appInfo = appInfo;
 
     this.wireUpSocketIo();
     this.wireUpSignalR();
 
     this.subscribeToServerEvents() ;
+
+    // have to get it a moment to get the connection 
+    // established
+    setTimeout(function(){
+      console.log('====> Sending ConsumerUi Activated');
+      PublishEvent.Create('ConsumerUi Activated', this.objectId);
+    }, 5000);
+
   }
 
   wireUpSignalR() {
@@ -68,7 +75,6 @@ export class SocketClient {
       onMessageSent$.subscribe((e: PubSubEventArgs) => {
         self.handleMessageFromServerViaSignalR(e);
       });
- 
 
     }).catch(function(err){
       console.log('=>SignalR Connected Failed', err);
@@ -86,7 +92,7 @@ export class SocketClient {
     const msgTime = new Date().getTime();
     if (incomingMessage === this.lastSignalRMessage) {
       if (msgTime < (this.lastSignalRTime + 1000)) {
-        console.log('Duplicate SignalR, Skipping ClientSide PubSub');
+        console.log("Duplicate SignalR, Skipping ClientSide PubSub");
         return ;
       }
     }
@@ -131,7 +137,7 @@ export class SocketClient {
   // called from pubsub as part of publish process
   send(e: PubSubEventArgs): void {
     console.log('sending event to server', e);
-    const self = this ;
+    let self = this ;
     const eAsString = JSON.stringify(e);
 
     if (this.socket) {
@@ -153,7 +159,7 @@ export class SocketClient {
           self.wireUpSignalR();
       });
     } else {
-        console.log('no signalR connection to send to');
+        console.log("no signalR connection to send to")
     }
   }
 
@@ -163,20 +169,20 @@ export class SocketClient {
 
       SubscribeEvent.Create(PubSubTopic.pingClient, this.objectId)
         .HandleEventWithThisMethod(function(e: PubSubEventArgs) {
-            // console.log('received ping from server, publishing ack', e);
+            console.log('received ping from server, publishing ack', e);
             PublishEvent.Create(PubSubTopic.pingClientAck, self.objectId)
               .Send();
         }).Done();
 
     SubscribeEvent.Create(PubSubTopic.pingServerAck, this.objectId)
       .HandleEventWithThisMethod(function(e) {
-        // console.log('received pingAck from server');
+        console.log('received pingAck from server');
       }).Done();
 
 
       setInterval(function(){
         const timenow = moment().format('dddd, MMMM Do YYYY, h:mm:ss a');
-       // console.log('sending ping to server',timenow);
+        console.log('sending ping to server',timenow);
         PublishEvent.Create(PubSubTopic.pingServer, self.objectId)
           .Send();
       }, 60000);

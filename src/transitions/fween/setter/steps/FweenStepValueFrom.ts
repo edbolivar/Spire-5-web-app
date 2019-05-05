@@ -1,37 +1,34 @@
 export default class FweenStepValueFrom {
-  // A step to set the starting value
 
-  // Properties
-  private _targetSet: (value: number) => void;
-  private _targetValue: number | (() => number);
+	// A step to set the starting value
 
-  // ================================================================================================================
-  // CONSTRUCTOR ----------------------------------------------------------------------------------------------------
+	// Properties
+	private _targetSet: (value: number) => void;
+	private _targetValue: number | (() => number);
 
-  constructor(
-    targetSet: (value: number) => void,
-    targetValue: number | (() => number)
-  ) {
-    this._targetSet = targetSet;
-    this._targetValue = targetValue;
-  }
 
-  // ================================================================================================================
-  // PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
+	// ================================================================================================================
+	// CONSTRUCTOR ----------------------------------------------------------------------------------------------------
 
-  public start(): void {}
+	constructor(targetSet: (value: number) => void, targetValue: number | (() => number)) {
+		this._targetSet = targetSet;
+		this._targetValue = targetValue;
+	}
 
-  public update(t: number): void {}
 
-  public end(): void {
-    this._targetSet(
-      typeof this._targetValue === 'function'
-        ? this._targetValue()
-        : this._targetValue
-    );
-  }
+	// ================================================================================================================
+	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
 
-  public getDuration(): number {
-    return 0;
-  }
+	public start(): void { }
+
+	public update(t: number): void { }
+
+	public end(): void {
+		console.log("[FROM] UPDATE @ ", typeof(this._targetValue) === "function" ? this._targetValue() : this._targetValue);
+		this._targetSet(typeof(this._targetValue) === "function" ? this._targetValue() : this._targetValue);
+	}
+
+	public getDuration(): number {
+		return 0;
+	}
 }

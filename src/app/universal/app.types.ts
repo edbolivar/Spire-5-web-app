@@ -1,7 +1,5 @@
-import {Observer} from 'rxjs/Observer';
 import {JsUtil} from './JsUtil';
-import * as moment from 'moment';
-import LegacyAnimatedSprite from '../display/components/LegacyAnimatedSprite';
+import { AnimationDefinition } from '../data/types/AnimationDefinition';
 
 export class AppConfig {
   production: false;
@@ -113,13 +111,13 @@ export class ScreenMetrics {
 
   serviceActionButtonWidth: string;
   serviceActionButtonHeight: string;
-  keypadWidth : string;
-  keypadHeight : string;
+  keypadWidth: string;
+  keypadHeight: string;
 }
 
 export class ButtonEventData {
   // var data = {type:e.type, buttonModel:this.buttonModel, tag:e} ;
-  constructor(public type: string, public buttonModel : ButtonModel, public viewModelObjectId, public tag?: any) {
+  constructor(public type: string, public buttonModel: ButtonModel, public viewModelObjectId, public tag?: any) {
   }
 }
 
@@ -177,7 +175,16 @@ export class ConfigurationData {
   platform: Platform;
   flavors: FlavorDesign[] = [];
   idleState: IdleState = new IdleState();
-  bubbles: Bubbles = new Bubbles();
+  bubbles: AnimationDefinition = {
+    id: 'bubbles',
+    image: '', 
+    frameWidth: 0, 
+    frameHeight: 0, 
+    frames: 0, 
+    fps: 0, 
+    scale: 1,
+    autoPlay: false
+  };
   animations: DesignAnimation[] = [];
   pourables: PourItemModel = new PourItemModel();
   localizedItems: ConsumerUILocalizationModel = new ConsumerUILocalizationModel();
@@ -186,8 +193,6 @@ export class ConfigurationData {
     this.objectId = JsUtil.getObjectId();
   }
 }
-
-
 
 export class ResourceItem {
   name = '';
@@ -230,7 +235,6 @@ export class PourableDesign {
   design: DesignNode = new DesignNode();
   Weighting = 0;
   CalorieCups: CalorieCup[] = [];
-  animation_id = '';  
   // added for Mixology Pour Page by Eugene
   // isMix = false;
   // flavorShots: string[] = [];
@@ -254,7 +258,7 @@ export class DesignAssets {
   gradient = '';
   liquidIntro = '';
   liquidIdle = '';
-  liquidBackground = '' ;  
+  liquidBackground = '' ;
   mixName = '';
   bfConnector = '';
 
@@ -282,7 +286,9 @@ export class PourItemModel {
   topCombinations: PourableDesign[] = [] ;
   flavors: FlavorDesign[] = [];
   curatedMixes: PourableDesign[] = [];
+  pourMenu: PourableDesign[] = [];
 }
+
 export class PourItem {
   id = '';
   pourConfigurationId = '';
@@ -290,6 +296,7 @@ export class PourItem {
   isDisabled = false ;
   brandId = '';
   flavorIds: string[] = [];
+  isFocused = false ;
 }
 
 export class DesignParticleParentItem {
@@ -315,7 +322,7 @@ export class DesignAnimation {
   static getAnimationDefinition(animationId: string, animations: DesignAnimation[]): DesignAnimation {
     let i;
     for (i = 0; i < animations.length; ) {
-      if(animations[i].id === animationId) {
+      if (animations[i].id === animationId) {
         return animations[i];
       }
       i++;
@@ -340,14 +347,14 @@ export class DesignMetaballItem {
   scale = 1;
 
   static getMetaballItems(): DesignMetaballItem[] {
-    if(this.metaballItems == null) {
+    if (this.metaballItems == null) {
       // this.metaballItems = this.fromXMLList((FountainFamily.homeXML.child("metaballs")[0] as XML).children());
     }
     return this.metaballItems;
   }
 
   get animation(): DesignAnimation {
-    if(this.animation == null) {
+    if (this.animation == null) {
       // this.animation = DesignAnimation.getAnimationDefinition(animationId,FountainFamily.animationDefinitions);
     }
     return this.animation;
@@ -389,7 +396,7 @@ export class DesignSequenceItem {
   tinted = true;
 
   static getSequenceItems(): DesignSequenceItem[] {
-    if(this.sequenceItems == null) {
+    if (this.sequenceItems == null) {
       // this.sequenceItems = this.fromXMLList((FountainFamily.homeXML.child("sequences")[0] as XML).children());
     }
     return this.sequenceItems;
@@ -400,7 +407,7 @@ export class DesignSequenceItem {
   }
 
   get animation(): DesignAnimation {
-    if(this.animation == null) {
+    if (this.animation == null) {
       // this.animation = DesignAnimation.getAnimationDefinition(animationId,FountainFamily.animationDefinitions);
     }
     return this.animation;
@@ -444,10 +451,10 @@ export class ButtonModel {
     return outline ;
   }
   get isTapOnly(): boolean {
-    return (this.behaviors.indexOf('tap') > -1 && this.behaviors.length == 1) ;
+    return (this.behaviors.indexOf('tap') > -1 && this.behaviors.length === 1) ;
   }
   get isPressOnly(): boolean {
-    return (this.behaviors.indexOf('press') > -1 && this.behaviors.length == 1) ;
+    return (this.behaviors.indexOf('press') > -1 && this.behaviors.length === 1) ;
   }
 }
 
@@ -480,7 +487,7 @@ export class LocalizationResourceModel {
   ResourceStrings: LocalizedItems = new LocalizedItems();
 
   getHasItems(): boolean {
-    return Object.keys(this.ResourceStrings).length > 0;  
+    return Object.keys(this.ResourceStrings).length > 0;
   }
 }
 
@@ -501,12 +508,12 @@ export class Menu {
 }
 
 export class Metaball {
-  animation: string= '';
-  frequency: string= '';
-  centerX: string= '';
-  centerY: string= '';
-  angle: string= '';
-  scale: string= '';
+  animation: string = '';
+  frequency: string = '';
+  centerX: string = '';
+  centerY: string = '';
+  angle: string = '';
+  scale: string = '';
 }
 
 export class Metaballs {
@@ -527,33 +534,33 @@ export class PixiLocalizationItem {
 }
 
 export class Sequence {
-  animation: string= '';
-  frequency: string= '';
-  centerX: string= '';
-  centerY: string= '';
-  travelBlobs: string= '';
-  sameBlob: string= '';
-  childBlob: string= '';
-  direction: string= '';
-  heights: string= '';
-  speeds: string= '';
-  minTravelAngle: string= '';
-  maxTravelAngle: string= '';
-  alignWithTarget: string= '';
-  flipOnAligning: string= '';
-  rotationOffset: string= '';
-  scales: string= '';
-  playMetaballsStart: string= '';
-  playMetaballsEnd: string= '';
-  aboveTarget: string= '';
-  startImpact: string= '';
-  endImpact: string= '';
-  avoidOverlap: string= '';
-  avoidBleed: string= '';
-  tinted: string= '';
-  minStartAngle: string= '';
-  maxStartAngle: string= '';
-  restrictedBeverageIds: string= '';
+  animation: string = '';
+  frequency: string = '';
+  centerX: string = '';
+  centerY: string = '';
+  travelBlobs: string = '';
+  sameBlob: string = '';
+  childBlob: string = '';
+  direction: string = '';
+  heights: string = '';
+  speeds: string = '';
+  minTravelAngle: string = '';
+  maxTravelAngle: string = '';
+  alignWithTarget: string = '';
+  flipOnAligning: string = '';
+  rotationOffset: string = '';
+  scales: string = '';
+  playMetaballsStart: string = '';
+  playMetaballsEnd: string = '';
+  aboveTarget: string = '';
+  startImpact: string = '';
+  endImpact: string = '';
+  avoidOverlap: string = '';
+  avoidBleed: string = '';
+  tinted: string = '';
+  minStartAngle: string = '';
+  maxStartAngle: string = '';
+  restrictedBeverageIds: string = '';
 }
 
 export class Sequences {
@@ -572,9 +579,17 @@ export class HomeData {
 
 export class ApiResult {
   Success = true;
-  Message = "";
+  Message = '';
   Details: string[] = [];
-  Url = "";
+  Url = '';
 }
+
+export enum KEY_CODE {
+  RIGHT_ARROW = 39,
+  LEFT_ARROW = 37,
+  ONE = 49
+}
+
+
 
 

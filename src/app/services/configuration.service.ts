@@ -65,6 +65,7 @@ export class ConfigurationService {
         configurationData.animations = data[5];
         configurationData.localizedItems = data[6];
         configurationData.home = data[7];
+        this.adjustPlatformForProperLayout(configurationData);
 
         console.log('>>>Got ConfigurationData>>>', configurationData);
 
@@ -81,7 +82,20 @@ export class ConfigurationService {
         console.log('ERROR in loadConfigurationData', err);
     });
   }
-
+  private adjustPlatformForProperLayout(configData: ConfigurationData) {
+      const countOfItems = configData.pourables.pourMenu.length;
+      let tagName = `homeMenu_${countOfItems}`;
+      if (configData.platform.layout[tagName]) {
+        // we have a layout name
+        console.log('==Mapping Layout==');
+        configData.platform.layout.homeMenu = 
+          configData.platform.layout[tagName];
+      } else {
+        tagName = 'homeMenu';
+      }
+     
+      console.log(`mapped layout to [${tagName}] for [${countOfItems}] items`);
+  }
   private getAnimations(): Observable<DesignAnimation[]> {
     const url = this.appInfo.config.urls.animations;
     return this.http.get<DesignAnimation[]>(url)
@@ -89,7 +103,7 @@ export class ConfigurationService {
         const fixedUpArray: DesignAnimation[] = [];
         _.forEach(itemArray, function(item) {
           fixedUpArray.push(JsUtil.mapToNewObject(item, new DesignAnimation()));
-        })
+        });
         return fixedUpArray ;
       } )
       .pipe(
@@ -149,22 +163,33 @@ export class ConfigurationService {
 
   private mapPourables(pourItemModel: PourItemModel) {
     const targetPourItemModel = new PourItemModel();
+    
+    // @@TEST for LAYOUT Selection =======================
+    let brandsToTestWith = 8; // pourItemModel.brands.length;
+    // brandsToTestWith + curated mixes, gives us the layout
+    if (this.appInfo.numberOfBrands) {
+      brandsToTestWith = this.appInfo.numberOfBrands;
+    }
+    
+    pourItemModel.brands = pourItemModel.brands.slice(0, brandsToTestWith);
+
     this.addToPourableDesignModel(pourItemModel.brands, targetPourItemModel, 'brands');
     this.addToPourableDesignModel(pourItemModel.curatedMixes, targetPourItemModel, 'curatedMixes');
     this.addToPourableDesignModel(pourItemModel.waters, targetPourItemModel, 'waters');
     this.addToFlavorToPourableDesignModel(pourItemModel.flavors, targetPourItemModel);
     this.addToPourableDesignModel(pourItemModel.topCombinations, targetPourItemModel, 'topCombinations');
+    targetPourItemModel.pourMenu = pourItemModel.brands.concat(pourItemModel.curatedMixes);
+
     return targetPourItemModel;
   }
 
   addToPourableDesignModel(designItems: PourableDesign[],
                            targetPourItemModal: PourItemModel, targetPropertyName: string) {
-
-    const targetArray: PourableDesign[] = [];
-    // ToDo: need to add support for flavors, when ready
+   
     _.forEach(designItems, function(item: PourableDesign) {
       const pourableDesign: PourableDesign = JsUtil.mapToNewObject(item, new PourableDesign());
       pourableDesign.pourItem = JsUtil.mapToNewObject(pourableDesign.pourItem, new PourItem());
+      pourableDesign.pourItem.isDisabled = true ;
       pourableDesign.design = JsUtil.mapToNewObject(pourableDesign.design, new DesignNode());
       pourableDesign.design.assets = JsUtil.mapToNewObject(pourableDesign.design.assets, new DesignAssets());
       pourableDesign.design.colors = JsUtil.mapToNewObject(pourableDesign.design.colors, new DesignColors());
@@ -172,7 +197,7 @@ export class ConfigurationService {
 
       const calorieCups: CalorieCup[] = [];
       _.forEach(pourableDesign.CalorieCups, function(item){
-        calorieCups.push(JsUtil.mapToNewObject(item, new CalorieCup()))
+        calorieCups.push(JsUtil.mapToNewObject(item, new CalorieCup()));
       });
 
       pourableDesign.CalorieCups = calorieCups;
@@ -182,8 +207,6 @@ export class ConfigurationService {
 
   addToFlavorToPourableDesignModel(designItems: FlavorDesign[],
                            targetPourItemModal: PourItemModel) {
-
-    const targetArray: FlavorDesign[] = [];
 
     _.forEach(designItems, function(item: FlavorDesign) {
       const flavorDesign: FlavorDesign = JsUtil.mapToNewObject(item, new FlavorDesign());
@@ -237,9 +260,11 @@ export class ConfigurationService {
 
       console.error(msg); // log to console
 
-      PublishEvent.Create(PubSubTopic.logEventToServer, this.objectId)
+      // iffy, as the reason we might get an error because the
+      // server isn't there
+      PublishEvent.Create(PubSubTopic.logToServer, this.objectId)
         .SetDataArgumentTo(msg)
-        .Send;
+        .Send();
 
       // Let the app keep running by returning an empty result.
       return of(result as T);

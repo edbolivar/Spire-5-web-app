@@ -1,12 +1,12 @@
-import {JsUtil} from "./JsUtil";
+import {JsUtil} from './JsUtil';
 import {Observer} from 'rxjs/Observer';
 import {PubSubService} from './pub-sub.service';
 import {AppInfoService} from '../services/app-info.service';
 
 
-export class PubSubItem{
+export class PubSubItem {
   events: PubSubEventArgs[] = [];
-  constructor(public pubsubTopic: string){}
+  constructor(public pubsubTopic: string) { }
 }
 
 export interface Predicate<T> {
@@ -35,9 +35,9 @@ export class PubSubSubscriptionToken {
 
 
 export class PubSubEventArgs {
-  pubsubTopic : string ;
-  data : any ;
-  sourceObjectId : number ;
+  pubsubTopic: string ;
+  data: any ;
+  sourceObjectId: number ;
 
   /**
    * @param sourceObjectId should be specified WHEN the consumer there are multiple publishers of the same event, and it matters
@@ -154,7 +154,7 @@ export class EventDescriptor {
 }
 
 export class PubSubTopic {
-  static logEventToServer = 'log.event.to.server';
+  
   static configurationDataReady = 'configuration.data.ready';
   static pourComplete = 'pour.complete';
 
@@ -172,18 +172,12 @@ export class PubSubTopic {
   static pdmDataReady  = 'product.datamodel.ready' ;
 
 
-  static start  = 'start' ;
-  static stop  = 'stop' ;
-
-
   static testIODriver = 'test.iodriver.event';
   static popupDialog = 'popup.dialog';
 
-  static testSendToServer  = 'test.send.to.server' ;
-  static testSendToClient  = 'test.send.to.client' ;
-
 
   // --- client to server ---
+  static logToServer = 'log.to.server';
   static switchToServiceUI = 'switchToServiceUI';
   static pingServer = 'pingServer';
   static pingClientAck = 'pingClientAck';
@@ -206,6 +200,8 @@ export class PubSubTopic {
   static vibrateBody = 'vibrate.body';
   static localizationChanged = 'localization.changed';
 
-  static AdaSettingChanged = 'AdaSetting.changed';
+  static adaKeyPressed = 'adaKeyPressed'; 
+  static notifyKeyEvent = 'notifyKeyEvent';
+  static notifyBrandButtonChangeSelected = 'notifyBrandButtonChangeSelected';
 }
 

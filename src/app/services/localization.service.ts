@@ -101,5 +101,6 @@ export class LocalizationService {
         e => e.objectIdOfConsumer === objectIdOfConsumer
     );
 
+    // console.log('New PixiText', this._pixiTextByResourceId);
   }
 }

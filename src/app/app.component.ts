@@ -1,13 +1,11 @@
-import { Component, ApplicationRef } from '@angular/core';
+import {Component, ApplicationRef, HostListener} from '@angular/core';
 import {AppInfoService} from './services/app-info.service';
 import {JsUtil} from './universal/JsUtil';
 import {EventDescriptor, PublishEvent, PubSubTopic} from './universal/pub-sub-types';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 import {ConfigurationService} from './services/configuration.service';
 import {LocalizationService} from './services/localization.service';
-
-
-declare var PouchDB: any ;
+import {KEY_CODE} from './universal/app.types';
 
 @Component({
   selector: 'app-root',
@@ -15,13 +13,14 @@ declare var PouchDB: any ;
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  objectId: number ;
+  objectId: number;
 
   constructor(public appInfo: AppInfoService,
               private configurationService: ConfigurationService,
               private localizationService: LocalizationService,
               private titleService: Title,
-              private app: ApplicationRef) {
+              private app: ApplicationRef
+  ) {
 
     this.objectId = JsUtil.getObjectId();
     console.log('ctor.AppComponent', this.objectId);
@@ -32,6 +31,8 @@ export class AppComponent {
 
     this.titleService.setTitle(this.appInfo.config.siteName);
     this.definePubSubEvents();
+
+   
   }
 
   definePubSubEvents() {
@@ -42,7 +43,7 @@ export class AppComponent {
     this.appInfo.pubsub.configureUsingPubSubTopicWithoutEventOptions();
 
     // describe events that have special options (last definition wins)
-    EventDescriptor.Create(PubSubTopic.testSendToServer)
+    EventDescriptor.Create(PubSubTopic.logToServer)
       .GoesToServer();
 
     EventDescriptor.Create(PubSubTopic.testIODriver)
@@ -74,11 +75,13 @@ export class AppComponent {
 
   }
 
-  onKeyPress(e: KeyboardEvent) {
-    if (e.key === '1') {
-      // secret key to activate pinpad
-      PublishEvent.Create(PubSubTopic.showPinpad, this.objectId)
-        .Send();
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    // console.log(event);
+
+    if (event.keyCode === KEY_CODE.ONE) {
+      // activate keypad, when the number 1 is pressed
+      PublishEvent.Create(PubSubTopic.showPinpad, this.objectId).Send();
     }
   }
 }
