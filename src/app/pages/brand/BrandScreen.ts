@@ -239,6 +239,7 @@ export default class BrandScreen extends AbstractScreen {
         -Math.PI,
         Math.PI
       );
+
       this._bigBubbleStroke.rotation = MathUtils.rangeMod(
         (s * Math.PI * -2) / rotationSpeed,
         -Math.PI,
@@ -278,7 +279,8 @@ export default class BrandScreen extends AbstractScreen {
       if (this._beverage.isMix) {
         this._flavorMix.destroy();
       } else {
-        this._flavorList.destroy();f      }
+        this._flavorList.destroy();
+      }
     }
     BrandScreen._instance = null;
     SubscribeEvent.UnSubscribeByConsumer(this.objectId);
@@ -362,7 +364,6 @@ export default class BrandScreen extends AbstractScreen {
       this.alpha = t;
     }
   }
-  
   gotoHome() {
     this.navigator.goTo(AppRoutes.getHome());
   }
