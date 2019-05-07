@@ -43,8 +43,6 @@ export default class FlavorMix extends Sprite {
     // so using the above, you get this data,then you know whatlogo's to use
     // private _brandIngredient: PourableDesign;
     //  private _flavorIngredients: FlavorDesign[];
-
-
     
   }
 

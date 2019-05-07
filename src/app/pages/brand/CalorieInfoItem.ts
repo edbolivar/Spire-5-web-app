@@ -8,7 +8,7 @@ import {LocalizationService} from '../../services/localization.service';
 export default class CalorieInfoItem extends Sprite {
 
     private _line1Label: Text;
-    private _line2Label: Text ;
+    private _line2Label: Text;
 
     private __width: number;
     private __height: number;
