@@ -209,25 +209,25 @@ export default class HomeScreen extends AbstractScreen {
     );
   }
 
-  private createTitle(vw: number, vh: number) {
-    const options = this.appInfo.isAda
-      ? this.Platform.layout.homeTitleAda
-      : this.Platform.layout.homeTitle;
+  // private createTitle(vw: number, vh: number) {
+  //   const options = this.appInfo.isAda
+  //     ? this.Platform.layout.homeTitleAda
+  //     : this.Platform.layout.homeTitle;
       
-    if(this.appInfo.isAda === true){
-      console.log(this.appInfo.isAda);
-      this.createNavLabel(vw,vh);
-    } else if(this.appInfo.isAda === false && this._labelTouch1 != null){
-      this._labelTouch1.visible = false;
-      this._labelTouch2.visible = false;
-    }
-    const dimensions = LayoutUtils.parseLayoutRectangle(options, vw, vh);
-    this._title = this.createText(dimensions, 'home.title', 52, 0xff000000);
+  //   if(this.appInfo.isAda === true){
+  //     console.log(this.appInfo.isAda);
+  //     this.createNavLabel(vw,vh);
+  //   } else if(this.appInfo.isAda === false && this._labelTouch1 != null){
+  //     this._labelTouch1.visible = false;
+  //     this._labelTouch2.visible = false;
+  //   }
+  //   const dimensions = LayoutUtils.parseLayoutRectangle(options, vw, vh);
+  //   this._title = this.createText(dimensions, 'home.title', 52, 0xff000000);
 
-    this._titlePosition = new Point(
-      this._title.position.x,
-      this._title.position.y
-    );
+  //   this._titlePosition = new Point(
+  //     this._title.position.x,
+  //     this._title.position.y
+  //   );
   }
 
   private createText(
@@ -410,19 +410,19 @@ export default class HomeScreen extends AbstractScreen {
     });
   }
 
-  toggleAdaStatus() {
-    const vw = this.Platform.width;
-    const vh = this.Platform.height;
-    this.appInfo.isAda = !this.appInfo.isAda;
-    if (this._menu.redraw) {
-      this._menu.redraw(this.appInfo.isAda);
-    }
-    this._title.destroy();
-    this._preTitle.destroy();
-    this.createPreTitle(vw, vh);
-    this.createTitle(vw, vh);
-    this.redrawVisibility();
-  }
+  // toggleAdaStatus() {
+  //   const vw = this.Platform.width;
+  //   const vh = this.Platform.height;
+  //   this.appInfo.isAda = !this.appInfo.isAda;
+  //   if (this._menu.redraw) {
+  //     this._menu.redraw(this.appInfo.isAda);
+  //   }
+  //   this._title.destroy();
+  //   this._preTitle.destroy();
+  //   this.createPreTitle(vw, vh);
+  //   this.createTitle(vw, vh);
+  //   this.redrawVisibility();
+  // }
 
   private redrawVisibility() {
     this.alpha = 1;

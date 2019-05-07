@@ -65,7 +65,7 @@ export default class LiquidVideo extends Sprite {
     this.redrawPoured();
   }
 
-  public get pouredTarget() {
+  public get pouredTarget() { 
     return this._pouredTarget;
   }
 
