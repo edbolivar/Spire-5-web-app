@@ -324,7 +324,7 @@ export default class MainMenu extends Sprite {
 
     SharedGameLooper.onTickedOncePerVisualFrame.remove(this.update);
     SubscribeEvent.UnSubscribeByConsumer(this.objectId);
-    MainMenu._instance = null;
+    // MainMenu._instance = null;
     super.destroy();
   }
 
@@ -380,9 +380,9 @@ export default class MainMenu extends Sprite {
       }
     });
     
-    // if(this._isAda === true) {
-    //   this._sortedButtons = this._buttons;
-    // }
+    if(this._isAda === true) {
+      this._sortedButtons = this._buttons;
+    }
     this.appInfo.adaNavigationService._selectedButton.isFocused = this.appInfo.isAda ? true : false; 
     this._hitArea.width = this._intrinsicWidth;
     this._hitArea.height = this._intrinsicHeight;
@@ -545,21 +545,21 @@ export default class MainMenu extends Sprite {
       const desiredScale: number =
         this._focusedRadius / this.scale.x / focusedBlobSprites.radius;
 
-      if (_brandTransitionIsHiding) {
-        // Hiding (home to brand)
-        const scale =
-          t < decreasePhase
-            ? map(Easing.quintOut(map(t, 0, decreasePhase, 0, 1)), 0, 1, 1, 0.5)
-            : map(
-                Easing.quintInOut(map(t, decreasePhase, 1, 0, 1)),
-                0,
-                1,
-                0.5,
-                desiredScale
-              );
+      // if (_brandTransitionIsHiding) {
+      //   // Hiding (home to brand)
+      //   const scale =
+      //     t < decreasePhase
+      //       ? map(Easing.quintOut(map(t, 0, decreasePhase, 0, 1)), 0, 1, 1, 0.5)
+      //       : map(
+      //           Easing.quintInOut(map(t, decreasePhase, 1, 0, 1)),
+      //           0,
+      //           1,
+      //           0.5,
+      //           desiredScale
+      //         );
 
-        focusedBlobSprites.internalScale = scale;
-      }
+      //   focusedBlobSprites.internalScale = scale;
+      // }
     }
   }
 }
